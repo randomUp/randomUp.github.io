@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" class="frontpage">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Daily CSS Design</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+    <meta property="og:title" content="Daily CSS Design" />
+    <meta property="og:description"
+        content="Daily CSS Design is a series of designs made in code. All shapes, patterns and colors are made by coding." />
+    <meta property="og:image" content="/og.jpg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000">
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="theme-color" content="#ffffff">
+</head>
+
+<body>
+    <header class="">
+        <a href="/" class="intro">
+            <h1 class="title">Daily <br>CSS <br>Design</h1>
+        </a>
+        <p class="description">Designs made in code</p>
+        <div class="day">
+            <p class="day__label">
+                <a href="https://www.instagram.com/dailycssdesign/" class="day__instagram">@DailyCssDesign</a>
+            </p>
+        </div>
+    </header>
+    <style>
+        .page-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0
+        }
+
+        .page-fg {
+            position: relative;
+            z-index: 1
+        }
+    </style>
+    <div class="page-bg">
+        <img src="img/bg.jpg" srcset="img/bg-mobile.jpg 860w, img/bg.jpg 2000w"
+            alt="Illustration of a landscape containing mountains, trees, and a river" width="100%">
+    </div>
+    <div class="page-fg">
+        <div class="why__content">
+            <!-- <h2 class="why__text why__title">Hi! I'm a web designer and this is my side project</h2> -->
+            <p class="why__text">
+                The goal was to create one design every day for a year. All shapes, patterns and colors are made by
+                coding. <a href="/about"><strong>Read more</strong></a>
+            </p>
+        </div>
+        <ul class="day-list">
+
+            <li>
+                <a href="/9/" class="day-list__link" title="Go to Day 9">
+                    <div class="day-list__image" data-src="/days/9/preview-small.jpg"></div>
+                    <p class="day-list__title">Open Day 9</p>
+                </a>
+            </li>
+            <li>
+                <a href="/8/" class="day-list__link" title="Go to Day 8">
+                    <div class="day-list__image" data-src="/days/8/preview-small.jpg"></div>
+                    <p class="day-list__title">Open Day 8</p>
+                </a>
+            </li>
+            <li>
+                <a href="/7/" class="day-list__link" title="Go to Day 7">
+                    <div class="day-list__image" data-src="/days/7/preview-small.jpg"></div>
+                    <p class="day-list__title">Open Day 7</p>
+                </a>
+            </li>
+            <li>
+                <a href="/6/" class="day-list__link" title="Go to Day 6">
+                    <div class="day-list__image" data-src="/days/6/preview-small.jpg"></div>
+                    <p class="day-list__title">Open Day 6</p>
+                </a>
+            </li>
+            <li>
+                <a href="/5/" class="day-list__link" title="Go to Day 5">
+                    <div class="day-list__image" data-src="/days/5/preview-small.jpg"></div>
+                    <p class="day-list__title">Open Day 5</p>
+                </a>
+            </li>
+            <li>
+                <a href="/4/" class="day-list__link" title="Go to Day 4">
+                    <div class="day-list__image" data-src="/days/4/preview-small.jpg"></div>
+                    <p class="day-list__title">Open Day 4</p>
+                </a>
+            </li>
+            <li>
+                <a href="/3/" class="day-list__link" title="Go to Day 3">
+                    <div class="day-list__image" data-src="/days/3/preview-small.jpg"></div>
+                    <p class="day-list__title">Open Day 3</p>
+                </a>
+            </li>
+            <li>
+                <a href="/2/" class="day-list__link" title="Go to Day 2">
+                    <div class="day-list__image" data-src="/days/2/preview-small.jpg"></div>
+                    <p class="day-list__title">Open Day 2</p>
+                </a>
+            </li>
+            <li>
+                <a href="/1/" class="day-list__link" title="Go to Day 1">
+                    <div class="day-list__image" data-src="/days/1/preview-small.jpg"></div>
+                    <p class="day-list__title">Open Day 1</p>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <script
+        type="text/javascript">(function () { var observer; var images = [].slice.call(document.querySelectorAll('.day-list__image')); var loadImage = function (elem) { var src = elem.getAttribute('data-src'); var image = new Image(); image.onload = function () { elem.style.backgroundImage = 'url(' + src + ')'; elem.className += ' day-list__image--loaded'; }; image.src = src; }; if (!('IntersectionObserver' in window)) { images.forEach(function (image) { loadImage(image); }); } else { var onIntersection = function (entries) { entries.forEach(function (entry) { if (entry.intersectionRatio > 0) { observer.unobserve(entry.target); loadImage(entry.target); } }); }; observer = new IntersectionObserver(onIntersection, { rootMargin: '50px 0px', threshold: 0.01, }); images.forEach(function (image) { observer.observe(image); }); } })();</script>
+</body>
+
+</html>
