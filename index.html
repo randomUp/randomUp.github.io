@@ -1,235 +1,170 @@
-<!DOCTYPE html>
-<html lang="en" class="no-js">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <!--  H1头部资源  -->
 
-<!-- Open Graph / Twitter Card -->
-<meta property="og:image" content="" />
-<meta name="twitter:image:src" content="" />
-<meta name="twitter:card" content="" />
-<meta property="og:site_name" content="Alliance Graphique Internationale (AGI)" />
-<meta property="og:description" content=" Alliance Graphique Internationale (AGI)  " />
-<meta name="twitter:description" content=" Alliance Graphique Internationale (AGI)  " />
-<meta name="twitter:site" content="@" />
-<meta name="twitter:creator" content="@" />
-<title>Alliance Graphique Internationale (AGI)</title>
-<meta property="og:title" content="Alliance Graphique Internationale (AGI) " />
-<meta name="twitter:title" content="Alliance Graphique Internationale (AGI) " />
-<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>而且创意AI可视化创意编程</title>
 
-<!-- 第三方样式 -->
-<link rel="stylesheet" href="css/uploader.css">
-<link rel="stylesheet" href="css/mediaelement.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/royalslider/9.5.4/royalslider.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/duotone-light.min.css"
+      id="cm-theme-light"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css"
+      id="cm-theme-dark"
+      disabled
+    />
+    <link rel="stylesheet" href="style.css" />
 
-<!-- AGI 主样式 -->
-<link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json" />
 
-<!-- Modernizr -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.7.1/modernizr.min.js"></script>
-</head>
-<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-<!-- Site-meta：隐藏 SEO 信息 -->
-<section class="Site-meta">
-<h1>AGI — Alliance Graphique Internationale</h1>
-<p>Design history &amp; inspiration from 1950 to now</p>
-<h2>Latest Projects</h2>
-<ul>
-<li><a href="https://a-g-i.org/design/fiberart">FIBERART</a> (XXXX) by Sabina Oberholzer</li>
-<li><a href="https://a-g-i.org/design/poster-1">POSTER</a> (xxxx) by Sabina Oberholzer</li>
-<li><a href="https://a-g-i.org/design/symposium-of-college-of-the-arts-design">Symposium of College of the Arts &amp; Design</a> (N/A) by Peter Megert</li>
-<li><a href="https://a-g-i.org/design/evening-with-charles-eames">Evening with Charles Eames</a> (N/A) by Peter Megert</li>
-<li><a href="https://a-g-i.org/design/north-american-nestle-organization">North American Nestle Organization</a> (N.A.) by Peter Megert</li>
-<li><a href="https://a-g-i.org/design/wired-magazine-visual-essays">Wired Magazine visual essays</a> (93-8) by Erik Adigard</li>
-<li><a href="https://a-g-i.org/design/this-way-up">This way up</a> (20XX) by Justus Oehler</li>
-<li><a href="https://a-g-i.org/design/typeradio-podcast-on-type-and-design">Typeradio - Podcast on Type and Design</a> (2024) by Liza Enebeis</li>
-<li><a href="https://a-g-i.org/design/the-body-in-the-library">The Body in the Library</a> (2024) by David Pearson</li>
-<li><a href="https://a-g-i.org/design/nourished-by-blood">Nourished by Blood</a> (2024) by David Pearson</li>
-<li><a href="https://a-g-i.org/design/kapwani-kiwanga-tinket">Kapwani Kiwanga, Tinket</a> (2024) by Markus Weisbeck</li>
-<li><a href="https://a-g-i.org/design/the-major-tones">The Major Tones</a> (2024) by Yeounjoo Park</li>
-<li><a href="https://a-g-i.org/design/turris-babel-architecture-magazine">Turris Babel – Architecture Magazine</a> (2024) by Martin Kerschbaumer</li>
-<li><a href="https://a-g-i.org/design/23-mcgowan-ciders">23 McGowan Ciders</a> (2024) by Louis Gagnon</li>
-<li><a href="https://a-g-i.org/design/sissa">SISSA</a> (2024) by Paolo Tassinari</li>
-<li><a href="https://a-g-i.org/design/la-teoria-del-vuoto">La teoria del vuoto</a> (2024) by Mauro Bubbico</li>
-<li><a href="https://a-g-i.org/design/abecedarium-silium-silkscreen-printer-promotion-card">Abecedarium, Silium Silkscreen printer, promotion card</a> (2024) by Philippe Apeloig</li>
-<li><a href="https://a-g-i.org/design/la-diversité-du-vivant">La Diversité du Vivant</a> (2024) by Toan Vu-Huu</li>
-<li><a href="https://a-g-i.org/design/sortir-le-travail-de-sa-nuit">Sortir le travail de sa nuit</a> (2024) by Toan Vu-Huu</li>
-<li><a href="https://a-g-i.org/design/skypeople">SKYPEOPLE</a> (2024) by Jianping Fang</li>
-</ul><a href="https://a-g-i.org/p2">Next page</a>
-<hr>
-</section>
+  </head>
+  <body>
+    <!--  H2 汉堡按钮  -->
+    <!-- 修改：aria-label 硬编码 → data-i18n-aria="nav.openMenu" -->
+    <button
+      class="hamburger-btn"
+      id="hamburgerBtn"
+      data-i18n-aria="nav.openMenu"
+      aria-expanded="false"
+      aria-controls="sidebar"
+    >
+      ☰
+    </button>
 
-<!-- Site-wall：全屏作品墙 -->
-<section class="Site-wall">
-<div class="Wall ui-wall is-inactive" id="wall" data-wall-ads="[]">
-  <div class="Wall-head">
-    <form action="#" class="Form  Form--wall  ui-wallSearch ui-hoverable" id="queryForm" method="get">
-      <div class="Form-section--suggestion"><input class="Form-input--suggestion" id="suggestion" name="suggestion" value=""></div>
-      <div class="Form-section--search"><input class="Form-input--search" id="query" name="query" value="" placeholder="Search AGI..." autocomplete="off">
-        <div class="Form-results"><span id="wallCount">999+</span> items</div>
+    <!--  H3 侧边栏导航  -->
+    <!-- 搜索框 / 导航项 / 我的脚本 / 页脚（导出 ZIP / 切换主题） -->
+    <nav class="sidebar" id="sidebar" aria-label="主导航">
+      <div class="sidebar-search">
+        <input
+          type="search"
+          id="sidebarSearch"
+          placeholder="搜索脚本..."
+          autocomplete="off"
+          aria-label="搜索脚本"
+          data-i18n-placeholder="nav.searchPlaceholder"
+        />
       </div>
-      <div class="Form-submit"><button type="submit" class="Link  Link--icon"><span class="Icon  Icon--search"><span>search</span></span></button></div>
-    </form>
-  </div>
-  <div class="Wall-body" id="wallScroll">
-    <div class="Wall-items ui-wall-items  ui-scrollPager" id="wallItems" data-scrollpager-call="site.ui.wall.loadMore">
-      <ul class="List  List--wall  ui-masonry" id="wallList"></ul>
-    </div>
-  </div>
-  <div class="Wall-loader" id="wallLoader"></div>
-</div>
-</section>
 
-<!-- 移动端菜单按钮 -->
-<div href="#" class="Site-menuLink"><a class="Icon  Icon--menu  ui-toggleState " id="menuToggle"><span>Menu</span></a></div>
+      <div
+        class="nav-item"
+        data-path="#/"
+        role="button"
+        tabindex="0"
+        data-i18n="nav.home"
+      >
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>首页</span>
+      </div>
+      <div
+        class="nav-item"
+        data-path="#/about"
+        role="button"
+        tabindex="0"
+        data-i18n="nav.about"
+      >
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>关于</span>
+      </div>
+      <div
+        class="nav-item"
+        data-path="#/ai"
+        role="button"
+        tabindex="0"
+        data-i18n="nav.ai"
+      >
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="16" r="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span>AI助手</span>
+      </div>
+      <div
+        class="nav-item"
+        data-path="#/generator"
+        role="button"
+        tabindex="0"
+        data-i18n="nav.generator"
+      >
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <span>编写脚本</span>
+      </div>
+      <div class="divider"></div>
+      <div class="section-title" data-i18n="nav.myScripts">我的脚本</div>
+      <div id="sidebar-pages">
+        <div class="no-pages" data-i18n="nav.noScripts">暂无编写的脚本</div>
+      </div>
 
-<!-- Site-page -->
-<section class="Site-page" id="page">
-
-<header class="Site-head ui-showHideNav" id="head">
-<div class="Container  Container--flush">
-<section class="Section  Section--header">
-
-  <div class="Section-head">
-    <div class="Site-logo" id="logo">
-      <hgroup class="Logo">
-        <!-- Logo 链接改为 #/ 触发 Wall -->
-        <h1><a href="#/"><span class="Logo-body">AGI</span></a></h1>
-      </hgroup>
-    </div>
-    <div class="Site-tagline" id="tagline">
-      <div class="Tagline">
-        <div class="Content Content--tagline">
-          <h3>Alliance Graphique Internationale</h3>
+      <div class="sidebar-footer">
+        <div class="footer-row">
+          <div
+          class="nav-item footer-item"
+          id="exportZipSidebar"
+          role="button"
+          tabindex="0"
+          data-i18n="nav.settings"
+          >
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            <span>设置</span>
+          </div>
+          <div class="footer-vdivider"></div>
+          <div
+            class="nav-item footer-item"
+            id="themeToggleSidebar"
+            role="button"
+            tabindex="0"
+            data-i18n="nav.themeToggle"
+          >
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <span>切换主题</span>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
+    </nav>
 
-  <div class="Section-body">
-    <div class="Site-navigation" id="navigation">
-      <nav class="Navigation  ui-mobileNav   Navigation--pages">
-        <ul>
-          <!-- Home 改为 #/ -->
-          <li class="Navigation-item  Navigation-item--home" id="home"><span class="Navigation-item-before"></span><a href="#/">Home</a></li>
-          <!-- Work / Members / About 改为 hash 路由 -->
-          <li class="Navigation-item  Navigation-item--work  "><span class="Navigation-item-before"></span><a href="#/work/">Work</a></li>
-          <li class="Navigation-item  Navigation-item--members  "><span class="Navigation-item-before"></span><a href="#/members/">Members</a></li>
-          <li class="Navigation-item  Navigation-item--about  "><span class="Navigation-item-before"></span><a href="#/about/">About</a></li>
-          <!-- Search 保持 # 由 JS 拦截 -->
-          <li class="Navigation-item  Navigation-item--search  "><span class="Navigation-item-before"></span><a href="#">Search</a></li>
-        </ul>
-      </nav>
-    </div>
-  </div>
+    <!--  H4 主容器与模态框  -->
+    <div class="overlay" id="overlay"></div>
 
-</section>
+    <main id="app" data-i18n="site.loading">加载中…</main>
 
-<!-- 移动端菜单内工具导航（已删除 Log in） -->
-<div class="Site-utility" id="utility">
-  <div class="Grid Grid--nav">
-    <div class="Grid-section Grid-section--1">
-      <nav class="Navigation   Navigation--footer">
-        <ul>
-          <li class="Navigation-item  Navigation-item--home"><span class="Navigation-item-before"></span><a href="#/">Home</a></li>
-          <li class="Navigation-item  Navigation-item--agi-open  "><span class="Navigation-item-before"></span><a href="https://agi-open.com/">AGI Open</a></li>
-          <li class="Navigation-item  Navigation-item--agi-congress  "><span class="Navigation-item-before"></span><a href="http://agi-congress.com/">AGI Congress</a></li>
-        </ul>
-      </nav>
+    <div
+      class="modal-backdrop"
+      id="modalBackdrop"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="modal" id="modalBox"></div>
     </div>
-    <div class="Grid-section Grid-section--2">
-      <ul class="List  List--mobileNav">
-        <li><a href="https://twitter.com/agigraphic">TWITTER</a></li>
-      </ul>
-    </div>
-  </div>
-  <ul class="List  List--utility"></ul>
-</div>
-</div>
-</header>
 
-<!-- Site-body -->
-<main class="Site-body" id="body">
-  <div class="Site-footnote ui-mousemove" id="footnote"></div>
-  <div class="Template ui-window"></div>
-</main>
+    <!--  H5 脚本引入  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
 
-<!-- Site-foot（已删除 Log in） -->
-<footer class="Site-foot" id="foot">
-<div class="Container">
-  <div class="Site-section  Site-section--summary">
-    <div class="Content  Content--summary">
-      <p>Alliance Graphique Internationale<a href="#/about/"></a></p>
-    </div>
-    <div class="Grid Grid--3">
-      <div class="Grid-item">
-        <p>Baederstrasse 23<br>CH-5400 Baden, Switzerland</p>
-      </div>
-      <div class="Grid-item">
-        <p>++41 71 393 58 48<br><a href="mailto:info@a-g-i.org">info@a-g-i.org</a></p>
-      </div>
-      <div class="Grid-item">
-        <p>AGI Secretariat<br><strong>Open on Thursdays from 9am to 5pm CET</strong></p>
-      </div>
-    </div>
-  </div>
-  <div class="Site-section  Site-section--nav">
-    <div class="Content  Content--summary">
-      <p>&nbsp;</p>
-    </div>
-    <div class="Grid Grid--nav">
-      <div class="Grid-section Grid-section--1">
-        <nav class="Navigation   Navigation--footerDesktop Navigation--footer">
-          <ul>
-            <li class="Navigation-item  Navigation-item--home"><span class="Navigation-item-before"></span><a href="#/">Home</a></li>
-            <li class="Navigation-item  Navigation-item--agi-open  "><span class="Navigation-item-before"></span><a href="https://agi-open.com/">AGI Open</a></li>
-            <li class="Navigation-item  Navigation-item--agi-congress  "><span class="Navigation-item-before"></span><a href="http://agi-congress.com/">AGI Congress</a></li>
-          </ul>
-        </nav>
-      </div>
-      <div class="Grid-section Grid-section--2 Grid-section--desktop">
-        <ul class="List">
-          <li><a href="https://twitter.com/agigraphic">Twitter</a></li>
-          <li><a href="https://www.facebook.com/agigraphic">Facebook</a></li>
-          <li><a href="https://www.instagram.com/agigraphic/">Instagram</a></li>
-          <li><a href="http://agi-open-london.tumblr.com">Tumblr</a></li>
-          <li><a href="https://www.youtube.com/channel/UCC0UK3rTrM5dDy4Y2jzYYig">YouTube</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-</footer>
-</section>
+    <script src="script.js"></script>
 
-<!-- Overlay 灯箱 -->
-<section class="Overlay Overlay--lightbox is-inactive" id="lightbox">
-<div class="Overlay-page">
-  <div class="Overlay-head"><a href="#" class="Overlay-close ui-toggleState" data-toggle-for="#lightbox">Close</a></div>
-  <div class="Overlay-body">
-    <div class="Overlay-content" id="lightboxContent"></div>
-  </div>
-</div>
-</section>
 
-<!-- 脚本 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="js/vendor/jquery-2.1.0.min.js"><\/script>')</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.17.0/TweenMax.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/2.6.0/fuse.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.1/isotope.pkgd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/packery/1.4.2/packery.pkgd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/1.4.6/jquery.scrollTo.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/royalslider/9.5.4/jquery.royalslider.min.js"></script>
+    <!--  H6 SW 注册 -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker
+            .register("./sw.js")
+            .catch(function (e) {
+              console.warn("[SW] 注册失败：", e);
+            });
+        });
+      }
+    </script>
 
-<script src="js/utils.js"></script>
-<script src="js/site-touch-plugins.js"></script>
-<script src="js/site-core.js"></script>
-</body>
+  </body>
 </html>
