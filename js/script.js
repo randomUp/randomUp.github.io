@@ -1,7 +1,10 @@
 /*!
  * site-core.js
  * ----------------------
- * AGI 站点主架构（已剥离所有第三方库，改由 CDN 提供）
+ * AGI 站点主架构
+ *
+ * 部署：GitHub Pages，纯 hash 模式
+ * URL 形如：https://username.github.io/agi-site/#/work/
  *
  * 依赖（必须在此之前加载）：
  *   - jQuery 2.1.x
@@ -15,16 +18,11 @@
  *   - jQuery Mousewheel 3.1.13
  *   - jQuery ScrollTo 1.4.6
  *   - RoyalSlider 9.5.4
- *   - site-touch-plugins.js（FastButton / fastClick / Touchy / DoubleTap）
- *   - utils.js
+ *   - js/site-touch-plugins.js
+ *   - js/utils.js
  *
- * 本文件包含：
- *   1. site 框架对象
- *   2. BrowserDetect
- *   3. AGI 全局数据变量
- *   4. Handlebars helpers
- *   5. 所有 AGI UI 组件
- *   6. site.opts / ajax rules / site.init()
+ * 已删除：GA、checkField、ajaxForm、登录表单
+ * 模式：纯 hash（pushState 关闭）
  */
 
 
@@ -365,6 +363,20 @@ var site = {
         });
         site.trigger('resize');
         site.trigger('scroll');
+
+        // ============================================================
+        // 首屏路由加载：如果 URL 带 #/xxx/ 则加载对应内容
+        // GitHub Pages 上，hash 部分不会触发服务器请求，永远返回 index.html
+        // 由 JS 根据 hash 决定加载哪个路由的内容
+        // ============================================================
+        (function() {
+            var hash = window.location.hash.replace(/^#/, '');
+            if (hash && hash !== '/' && hash !== '') {
+                setTimeout(function() {
+                    site.ajax.initialiseStateFromUrl();
+                }, 100);
+            }
+        })();
     },
     frame: function() {
         requestAnimationFrame(function() {
@@ -1373,15 +1385,28 @@ var site = {
         init: function() {
             if (!site.ajax.initialised) {
                 site.ajax.initialised = 1;
+
+                // 排除规则
                 site.ajax.exclude.push('.' + site.ajax.handledClass);
                 site.ajax.exclude.push('.' + site.ajax.ignoreClass);
                 site.ajax.exclude.push('.' + site.externalLinkClass);
-                site.ajax.exclude.push('a[href^="#"]');
+                // 只排除空 hash（Search / Close 按钮）和灯箱锚点
+                // 不排除 #/work/ 这类路由链接，否则它们不会被 AJAX 接管
+                site.ajax.exclude.push('a[href="#"]');
+                site.ajax.exclude.push('a[href^="#lightbox"]');
                 site.ajax.exclude.push('a[href$=".jpg"]');
 
                 site.ajax.getNewLinks();
 
-                if (history.pushState && !site.ajax.forcehash) {
+                if (site.ajax.forcehash) {
+                    // hash 模式：监听 hashchange
+                    window.addEventListener('hashchange', function() {
+                        if (site.ajax.requests) {
+                            site.ajax.back = 1;
+                            site.ajax.initialiseStateFromUrl();
+                        }
+                    }, false);
+                } else if (history.pushState) {
                     window.addEventListener('popstate', function(event) {
                         if (site.ajax.requests && event.state) {
                             site.ajax.back = 1;
@@ -1778,41 +1803,48 @@ var site = {
             }
         },
         initialiseStateFromUrl: function() {
-            var url = site.ajax.makeAjaxUrl(window.location);
+            var url;
 
-            if (0 && site.ajax.cache.opts.hasOwnProperty(url)) {
-                site.ajax.getPage(site.ajax.cache.opts[url]);
+            if (site.ajax.forcehash) {
+                // hash 模式：从 window.location.hash 取路由
+                var hash = window.location.hash.replace(/^#/, '');
+                url = hash || '/';
             } else {
-                for (var i in site.ajax.rules) {
-                    var rule = site.ajax.rules[i];
-                    break;
-                }
-                var $load = $(site.ajax.defaults.back);
-                var find = site.ajax.defaults.back;
-                var before = function() {};
-                var after = function() {};
-                site.ajax.getPage({
-                    url: url,
-                    load: $load,
-                    before: before,
-                    after: after,
-                    find: find,
-                    transition: {
-                        out: 0,
-                        in : 500
-                    }
-                });
+                url = site.ajax.makeAjaxUrl(window.location);
             }
+
+            var $load = $('.Site-body');
+            var find = '.Site-body';
+
+            site.ajax.getPage({
+                url: url,
+                load: $load,
+                before: function() {},
+                after: function() {},
+                find: find,
+                setVisibleUri: false,
+                updateGlobalUrl: false,
+                updateLinks: true,
+                transition: {
+                    out: 0,
+                    in : 500
+                }
+            });
         },
         setVisibleUri: function(url) {
             var hashUrl = site.ajax.makeHashUrl(url);
             var ajaxUrl = site.ajax.makeAjaxUrl(url);
 
-            if (history.pushState) {
+            if (site.ajax.forcehash) {
+                // hash 模式：只改 hash，浏览器不会发起服务器请求
+                var hashPart = hashUrl.split('#')[1] || '';
+                window.location.hash = hashPart;
+            } else if (history.pushState) {
                 history.pushState({}, null, ajaxUrl);
             } else {
                 window.location = hashUrl;
             }
+
             site.ajax.hash = hashUrl;
             var segments = site.ajax.segments(ajaxUrl);
             site.trigger("uriChanged", {
@@ -2027,6 +2059,7 @@ $(document).ready(function(){
         }
     });
 
+    // #home a 打开 Wall
     $('#home a').click(function(ev){
         ev.preventDefault();
         site.ui.wall.open();
@@ -2081,8 +2114,8 @@ site.addUI('loadData',{
         gotData:0,
         onFind:function(){
 
-        $.get('/data.json',function(data){
-        $.get('/members.json',function(memberJSON){
+        $.get('data.json',function(data){
+        $.get('members.json',function(memberJSON){
 
             DATA_projects = data.projects;
             DATA_authors = data.authors;
@@ -2202,7 +2235,7 @@ site.addUI('templateHeight',{
 
 
 /* ============================================================
-   ui-logger
+   ui-logger（GA 已删除，保留组件结构，deQueue 为空转发）
    ============================================================ */
 
 site.addUI('logger',{
@@ -2219,7 +2252,8 @@ site.addUI('logger',{
     deQueue : function(){
         if(site.ui.logger.queue.length){
             var item = site.ui.logger.queue.shift();
-            ga('send','event',item.eventCategory,item.eventAction, item.eventLabel);
+            // GA 已删除。如需接入其他统计，在此处转发 item。
+            // 例如：console.log('event', item.eventCategory, item.eventAction, item.eventLabel);
         }
     }
 })
@@ -2658,8 +2692,7 @@ site.addUI('projects',{
         }
 
         site.ajax.setVisibleUri(url);
-        var title = $('#filterTitle').text();
-        ga('send', 'pageview', {'page': url,'title' : title });
+        // GA 已删除（原：ga('send', 'pageview', {...})）
     },
     reset : function(){
         site.ui.projects.curPage = 1;
@@ -3135,6 +3168,7 @@ site.addUI('loadWork',{
                 $el.addClass('is-active');
                 $el.find('.Item-body').addClass('is-expanded');
 
+                // GA 相关 logger 调用保留，但 logger 已不发送 GA
                 var member = DATA_members['id_'+id];
                 site.ui.logger.log({
                     eventCategory: 'Member',
@@ -3306,10 +3340,12 @@ site.opts = {
   }
 }
 
-/* Ajax Rules */
-site.on('pageRequest',function(args){
-    ga('send', 'pageview', {'page': args.uri,'title' : args.title });
-});
+/* GitHub Pages：强制 hash 模式 */
+site.ajax.forcehash = 1;
+
+/* ============================================================
+   Ajax Rules
+   ============================================================ */
 
 site.ajax.exclude = ['#home a','#logo a','.Navigation-item--search a','.Navigation-item--more a, .Navigation-item--login a'];
 
@@ -3402,7 +3438,6 @@ site.registerComponent('toggleState',{
   activate : function($el){
     var state = $el.data('state');
     if(!site.defined(state)) state = 'is-active';
-    alert('activating');
     if(!$el.hasClass(state)) $el.trigger('click');
   },
   deactivate : function ($el){
@@ -3770,7 +3805,7 @@ site.registerComponent('lazyImage',{
 });
 
 
-/* ui-royalSlider（组件包装，库本身由 CDN 提供） */
+/* ui-royalSlider */
 site.registerComponent('royalSlider',{
 $slider : [],
 slider : {},
@@ -3814,14 +3849,11 @@ onUnhandled : function($el){
   $el.royalSlider(opts);
 
   var wrapperSelector = $el.data('royalslider-wrapper');
-  console.log($el, "= $el", wrapperSelector, "= wrapperSelector");
 
   if ( typeof wrapperSelector != "undefined" ) {
     var $wrapper = $el.closest(wrapperSelector);
-    console.log('wrapper if', $wrapper);
   } else {
     var $wrapper = $el.parent();
-    console.log('wrapper else', $wrapper);
   }
 
   site.ui.royalSlider.$slider = $el;
@@ -3829,7 +3861,6 @@ onUnhandled : function($el){
   site.ui.royalSlider.slider = slider;
 
   var $slide = $(slider.currSlide.content);
-    console.log(slider.currSlide);
     $wrapper.find('.ui-royalSlider-currentSlide').html(slider.currSlideId + 1);
     $wrapper.find('.ui-royalSlider-page').removeClass('is-active');
     $wrapper.find('.ui-royalSlider-page:eq('+ (slider.currSlideId)+')').addClass('is-active');
@@ -3848,7 +3879,6 @@ onUnhandled : function($el){
 
   slider.ev.on('rsAfterSlideChange', function(event) {
     var $slide = $(slider.currSlide.content);
-    console.log(slider.currSlide);
     $wrapper.find('.ui-royalSlider-currentSlide').html(slider.currSlideId + 1);
     $wrapper.find('.ui-royalSlider-page').removeClass('is-active');
     $wrapper.find('.ui-royalSlider-page:eq('+ (slider.currSlideId)+')').addClass('is-active');
@@ -4214,82 +4244,13 @@ site.addUI('ajaxPreload',{
 });
 
 
-/* ui-ajaxForm / autoFocus / checkField */
+/* ui-autoFocus（checkField 和 ajaxForm 已删除） */
 site.addUI('autoFocus',function($el){
   setTimeout(function() { $el.focus() }, 500);
 });
 
-site.addUI('checkField',function($el){
-  $el.blur(function(){
-    var val = $(this).val();
-    var url = $(this).data('check-url');
 
-    var $existing = $(this).parent().find('.Loader');
-    var $field = $el.closest('.Form-field');
-    if(!$existing.length){
-      var $loader = $('<div class="Loader  Loader--mini"><div class="Loader-body">Please wait...</div></div>');
-      $loader.insertAfter($el);
-  }else{
-    var $loader = $existing;
-  }
-
-      $.post(url,{value:val},function(response){
-      var $error = $field.parent().find('.Form-error');
-      if($error.length){
-            $error.remove();
-          }
-      if(response.errors.length){
-          var $error = $('<div class="Form-error">'+response.errors[0]+'</div>');
-          $error.insertAfter($field);
-      }
-
-    $loader.fadeOut(function(){
-           $(this).remove();
-      });
-  })
-  });
-});
-
-site.addUI('ajaxForm',function($el){
-    $el.submit(function(ev){
-      ev.preventDefault();
-      $el.addClass('is-active');
-      var data = $el.serializeArray();
-      var action = $(this).attr('action');
-
-      if(!site.defined(action)) action = '/';
-
-      site.trigger('formSubmit',{$el:$el});
-      $el.addClass('is-busy');
-
-      $.post(action,data,function(response){
-        if(!site.defined(response.errors)) response.errors = [];
-        if(!!site.defined(response.error)) response.errors = [response.error];
-
-        site.trigger('formComplete',{$el:$el,response:response});
-        $el.removeClass('is-busy');
-
-        $errors = $el.find('.ui-ajaxForm-errors');
-        if($errors.length) $errors.html('');
-
-        if(!site.defined(response.errors) || !response.errors.length){
-          site.trigger('formSuccess',{$el:$el,response:response});
-        }else{
-          if($errors.length){
-            $.each(response.errors,function(ix,value){
-              $errors.append('<div class="Form-error">'+value+'</div>');
-            });
-          }
-          site.trigger('formError',{$el:$el,response:response,errors:response.errors});
-        }
-
-        $el.removeClass('is-active');
-      });
-    });
-});
-
-
-/* ui-masonry（依赖 CDN 的 Isotope + Packery） */
+/* ui-masonry */
 site.addUI('masonry',{
 ready:0,
 resizing:0,
@@ -4753,11 +4714,9 @@ site.addUI('filterButton', {
     $el.click(function() {
       var $this = $(this);
       if($this.hasClass('is-active')) {
-        console.log('closing');
         $this.removeClass('is-active');
         $('.Site').removeClass('when-Button-is-active');
       } else {
-        console.log('opening');
         $filterButtons.removeClass('is-active');
         $this.addClass('is-active');
 
@@ -5014,10 +4973,8 @@ site.addUI('showHideNav', {
         if(site.$html.hasClass('Site--scrolled')) {
           if(currentScroll > prevScroll) {
               $el.addClass('is-scrollingDown').removeClass('is-scrollingUp');
-              console.log('down');
           } else {
             $el.addClass('is-scrollingUp').removeClass('is-scrollingDown');
-            console.log('up');
           }
         }
         prevScroll = currentScroll;
@@ -5026,7 +4983,7 @@ site.addUI('showHideNav', {
 });
 
 
-/* ui-accordion（依赖 CDN 的 jQuery UI Accordion） */
+/* ui-accordion */
 site.addUI('accordion', function($el) {
   var active = $el.data('accordion-active');
   if(typeof active == 'undefined') active = 0;
