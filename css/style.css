@@ -13,7 +13,7 @@
  * 04. 工具与状态类
  * 05. 核心布局系统（Container / Grid / Cell / List）
  * 06. 核心组件（Button / Content / Dialog / Overlay / Loader）
- * 07. 表单系统（Form / Login / Checkbox / Drop）
+ * 07. 表单系统（Form / Checkbox / Drop）
  * 08. 图标系统（Icon / Logo）
  * 09. 导航系统（Navigation / Header）
  * 10. 页面模块（Site / Template / Section / Item / Filter / Info）
@@ -22,9 +22,16 @@
  * 13. Slider（RoyalSlider 包装）
  * 14. 表格与日历
  * 15. UI 组件钩子（.ui-*）
- * 16. Accordion / Action / Shortcuts
- * 17. About 页专用
+ * 16. Accordion / Action / Button
+ * 17. List / Link / Grid 变体
+ * 18. About 页专用
+ * 19. Popup / Search
  * --------------------------------------------------------------------
+ *
+ * 注：Uploader / MediaElement / RoyalSlider 的样式已拆分到
+ *    css/vendor/uploader.css
+ *    css/vendor/mediaelement.css
+ *    （RoyalSlider 建议走 CDN）
  */
 
 
@@ -35,34 +42,34 @@
 /* New Rail Alphabet — 主字体 */
 @font-face {
   font-family: 'NewRailAlphabetWhite';
-  src: url('../fonts/newrailalphabet/newrailalphabet-white.eot');
+  src: url('../ui/fonts/newrailalphabet/newrailalphabet-white.eot');
   src:
-    url('../fonts/newrailalphabet/newrailalphabet-white.eot') format('embedded-opentype'),
-    url('../fonts/newrailalphabet/newrailalphabet-white.woff') format('woff'),
-    url('../fonts/newrailalphabet/newrailalphabet-white.ttf') format('truetype'),
-    url('../fonts/newrailalphabet/newrailalphabet-white.svg#NewRailAlphabetWhite') format('svg');
+    url('../ui/fonts/newrailalphabet/newrailalphabet-white.eot') format('embedded-opentype'),
+    url('../ui/fonts/newrailalphabet/newrailalphabet-white.woff') format('woff'),
+    url('../ui/fonts/newrailalphabet/newrailalphabet-white.ttf') format('truetype'),
+    url('../ui/fonts/newrailalphabet/newrailalphabet-white.svg#NewRailAlphabetWhite') format('svg');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: 'NewRailAlphabetLight';
-  src: url('../fonts/newrailalphabet/newrailalphabet-light.eot');
+  src: url('../ui/fonts/newrailalphabet/newrailalphabet-light.eot');
   src:
-    url('../fonts/newrailalphabet/newrailalphabet-light.eot') format('embedded-opentype'),
-    url('../fonts/newrailalphabet/newrailalphabet-light.woff') format('woff'),
-    url('../fonts/newrailalphabet/newrailalphabet-light.ttf') format('truetype'),
-    url('../fonts/newrailalphabet/newrailalphabet-light.svg#NewRailAlphabetLight') format('svg');
+    url('../ui/fonts/newrailalphabet/newrailalphabet-light.eot') format('embedded-opentype'),
+    url('../ui/fonts/newrailalphabet/newrailalphabet-light.woff') format('woff'),
+    url('../ui/fonts/newrailalphabet/newrailalphabet-light.ttf') format('truetype'),
+    url('../ui/fonts/newrailalphabet/newrailalphabet-light.svg#NewRailAlphabetLight') format('svg');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: 'NewRailAlphabetMedium';
-  src: url('../fonts/newrailalphabet/newrailalphabet-medium.eot');
+  src: url('../ui/fonts/newrailalphabet/newrailalphabet-medium.eot');
   src:
-    url('../fonts/newrailalphabet/newrailalphabet-medium.eot') format('embedded-opentype'),
-    url('../fonts/newrailalphabet/newrailalphabet-medium.woff') format('woff'),
-    url('../fonts/newrailalphabet/newrailalphabet-medium.ttf') format('truetype'),
-    url('../fonts/newrailalphabet/newrailalphabet-medium.svg#NewRailAlphabetMedium') format('svg');
+    url('../ui/fonts/newrailalphabet/newrailalphabet-medium.eot') format('embedded-opentype'),
+    url('../ui/fonts/newrailalphabet/newrailalphabet-medium.woff') format('woff'),
+    url('../ui/fonts/newrailalphabet/newrailalphabet-medium.ttf') format('truetype'),
+    url('../ui/fonts/newrailalphabet/newrailalphabet-medium.svg#NewRailAlphabetMedium') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -70,13 +77,13 @@
 /* 等宽字体 */
 @font-face {
   font-family: 'droid-sans-mono';
-  src: url('/_core/fonts/droid-sans-mono/droidsansmono-webfont.eot');
+  src: url('../_core/fonts/droid-sans-mono/droidsansmono-webfont.eot');
   src:
-    url('/_core/fonts/droid-sans-mono/droidsansmono-webfont.eot?#iefix') format('embedded-opentype'),
-    url('/_core/fonts/droid-sans-mono/droidsansmono-webfont.woff2') format('woff2'),
-    url('/_core/fonts/droid-sans-mono/droidsansmono-webfont.woff') format('woff'),
-    url('/_core/fonts/droid-sans-mono/droidsansmono-webfont.ttf') format('truetype'),
-    url('/_core/fonts/droid-sans-mono/droidsansmono-webfont.svg#droid_sans_monoregular') format('svg');
+    url('../_core/fonts/droid-sans-mono/droidsansmono-webfont.eot?#iefix') format('embedded-opentype'),
+    url('../_core/fonts/droid-sans-mono/droidsansmono-webfont.woff2') format('woff2'),
+    url('../_core/fonts/droid-sans-mono/droidsansmono-webfont.woff') format('woff'),
+    url('../_core/fonts/droid-sans-mono/droidsansmono-webfont.ttf') format('truetype'),
+    url('../_core/fonts/droid-sans-mono/droidsansmono-webfont.svg#droid_sans_monoregular') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -85,22 +92,22 @@
 @font-face {
   font-family: 'ss-social-circle';
   src:
-    url('/_core/fonts/ss-social-circle/SSSocialCircle.eot?#iefix') format('embedded-opentype'),
-    url('/_core/fonts/ss-social-circle/SSSocialCircle.otf') format('opentype'),
-    url('/_core/fonts/ss-social-circle/SSSocialCircle.woff') format('woff'),
-    url('/_core/fonts/ss-social-circle/SSSocialCircle.ttf') format('truetype'),
-    url('SSSocialCircle.svg#SSSocialCircle') format('svg');
+    url('../_core/fonts/ss-social-circle/SSSocialCircle.eot?#iefix') format('embedded-opentype'),
+    url('../_core/fonts/ss-social-circle/SSSocialCircle.otf') format('opentype'),
+    url('../_core/fonts/ss-social-circle/SSSocialCircle.woff') format('woff'),
+    url('../_core/fonts/ss-social-circle/SSSocialCircle.ttf') format('truetype'),
+    url('../_core/fonts/ss-social-circle/SSSocialCircle.svg#SSSocialCircle') format('svg');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: 'ss-social-regular';
-  src: url('/_core/fonts/ss-social-regular/ss-social-regular.eot');
+  src: url('../_core/fonts/ss-social-regular/ss-social-regular.eot');
   src:
-    url('/_core/fonts/ss-social-regular/ss-social-regular.eot?#iefix') format('embedded-opentype'),
-    url('/_core/fonts/ss-social-regular/ss-social-regular.woff') format('woff'),
-    url('/_core/fonts/ss-social-regular/ss-social-regular.ttf') format('truetype'),
-    url('/_core/fonts/ss-social-regular/ss-social-regular.svg#SSSocialRegular') format('svg');
+    url('../_core/fonts/ss-social-regular/ss-social-regular.eot?#iefix') format('embedded-opentype'),
+    url('../_core/fonts/ss-social-regular/ss-social-regular.woff') format('woff'),
+    url('../_core/fonts/ss-social-regular/ss-social-regular.ttf') format('truetype'),
+    url('../_core/fonts/ss-social-regular/ss-social-regular.svg#SSSocialRegular') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -108,23 +115,23 @@
 /* 图标字体（原文件重复两次，此处合并为一次） */
 @font-face {
   font-family: 'icons';
-  src: url('../fonts/icons/icons.eot?kur3bi');
+  src: url('../ui/fonts/icons/icons.eot?kur3bi');
   src:
-    url('../fonts/icons/icons.eot?kur3bi#iefix') format('embedded-opentype'),
-    url('../fonts/icons/icons.ttf?kur3bi') format('truetype'),
-    url('../fonts/icons/icons.woff?kur3bi') format('woff'),
-    url('../fonts/icons/icons.svg?kur3bi#icomoon') format('svg');
+    url('../ui/fonts/icons/icons.eot?kur3bi#iefix') format('embedded-opentype'),
+    url('../ui/fonts/icons/icons.ttf?kur3bi') format('truetype'),
+    url('../ui/fonts/icons/icons.woff?kur3bi') format('woff'),
+    url('../ui/fonts/icons/icons.svg?kur3bi#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: 'newIcons';
-  src: url('../fonts/newIcons/newIcons.eot?qh7ibh');
+  src: url('../ui/fonts/newIcons/newIcons.eot?qh7ibh');
   src:
-    url('../fonts/newIcons/newIcons.eot?qh7ibh#iefix') format('embedded-opentype'),
-    url('../fonts/newIcons/newIcons.ttf?qh7ibh') format('truetype'),
-    url('../fonts/newIcons/newIcons.woff?qh7ibh') format('woff'),
-    url('../fonts/newIcons/newIcons.svg?qh7ibh#icomoon') format('svg');
+    url('../ui/fonts/newIcons/newIcons.eot?qh7ibh#iefix') format('embedded-opentype'),
+    url('../ui/fonts/newIcons/newIcons.ttf?qh7ibh') format('truetype'),
+    url('../ui/fonts/newIcons/newIcons.woff?qh7ibh') format('woff'),
+    url('../ui/fonts/newIcons/newIcons.svg?qh7ibh#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -923,67 +930,6 @@ h1, h2, h3, h4, h5, h6 { font-weight: normal; }
 .Checkbox input[type='checkbox']:checked + label:after,
 .Checkbox input[type='radio']:checked + label:after { opacity: 1; }
 
-/* Login */
-.Login {
-  position: absolute;
-  top: -200px;
-  left: 0;
-  right: 0;
-  padding-bottom: 4px;
-  z-index: 3;
-  background: #fff;
-  box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.3);
-  -webkit-transition: top 600ms cubic-bezier(0.19, 1, 0.22, 1);
-  transition: top 600ms cubic-bezier(0.19, 1, 0.22, 1);
-}
-@media (max-width: 745px) {
-  .Login { padding-top: 9px; padding-right: 8px; padding-left: 10px; }
-}
-@media (min-width: 746px) {
-  .Login { padding-top: 18px; padding-right: 16px; padding-left: 20px; }
-}
-.Login.is-active { top: 0; }
-.Login li { margin-bottom: 10px; }
-.Login-title { text-transform: uppercase; margin-bottom: 6px; }
-.Login-textInput {
-  width: 100%;
-  border: 1px solid #e3e3e3;
-  background-color: #f1f1f1;
-  padding: 13px 10px 9px 20px;
-  text-transform: uppercase;
-}
-.Login--alpha {
-  position: fixed;
-  top: 100%;
-  bottom: 0;
-  padding-top: 20px;
-  padding-right: 10px;
-  background: #000;
-  box-shadow: none;
-  -webkit-transform: scale(0.6);
-  transform: scale(0.6);
-  -webkit-transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1);
-  transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1);
-}
-.Login--alpha.is-active {
-  top: 91px;
-  -webkit-transform: scale(1);
-  transform: scale(1);
-}
-.Login--alpha .Login-head { padding-bottom: 20px; }
-.Login--alpha .Login-head p { font-size: 16px; font-size: 1rem; color: #fff; }
-.Login--alpha ul { padding-bottom: 10px; }
-.Login--alpha .Login-title,
-.Login--alpha .Checkbox {
-  position: absolute !important;
-  overflow: hidden !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  clip: rect(1px, 1px, 1px, 1px) !important;
-}
-
 /* Drop */
 .Drop {
   position: absolute;
@@ -1100,12 +1046,12 @@ h1, h2, h3, h4, h5, h6 { font-weight: normal; }
   width: 100%;
   height: 0;
   padding-top: 100%;
-  background-image: url(/ui/img/menu.svg);
+  background-image: url(../img/icons/menu.svg);
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 100% auto;
 }
-.when-Icon-is-active .Icon--menu { background-image: url(/ui/img/menuActive.svg); }
+.when-Icon-is-active .Icon--menu { background-image: url(../img/icons/menuActive.svg); }
 
 .Icon--mobileInfoClose {
   color: white;
@@ -1146,14 +1092,14 @@ h1, h2, h3, h4, h5, h6 { font-weight: normal; }
 .Logo:after {
   display: block;
   content: '';
-  background-image: url('/ui/img/logo.svg');
+  background-image: url('../img/icons/logo.svg');
   background-size: 68px 30px;
   background-repeat: no-repeat;
   height: 30px;
   width: 68px;
 }
 @media (max-width: 745px) {
-  .Logo:after { background-image: url('/ui/img/logo-white.svg'); }
+  .Logo:after { background-image: url('../img/icons/logo-white.svg'); }
 }
 
 
@@ -2553,7 +2499,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: normal; }
   height: 100%;
   background: blue;
   cursor: pointer;
-  background: url(/ui/img/play.svg) center center no-repeat;
+  background: url(../img/icons/play.svg) center center no-repeat;
   background-size: 80% 80%;
   -webkit-transition: opacity 0.4s ease;
   transition: opacity 0.4s ease;
@@ -2759,6 +2705,7 @@ html.Site--expanded body { overflow: hidden; width: 100%; }
   left: 0;
 }
 
+/* ui-mediaelement 容器（MediaElement 自身样式在 vendor/mediaelement.css） */
 .ui-mediaelement {
   width: 100%;
   padding-top: 57.25%;
@@ -3447,7 +3394,7 @@ html.Site--expanded body { overflow: hidden; width: 100%; }
   .Popup { width: 90%; padding: 20px; }
 }
 .Popup .Popup-logo {
-  background: url('/ui/img/logo.svg') center center no-repeat;
+  background: url('../img/icons/logo.svg') center center no-repeat;
   background-size: 100% auto;
   width: 25%;
   padding-top: 11%;
