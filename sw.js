@@ -1,5 +1,5 @@
 var CACHE_VERSION = "1.01";
-var CACHE_NAME = "randomArt-v" + CACHE_VERSION;
+var CACHE_NAME = "而且创意-V" + CACHE_VERSION;
 var PRECACHE_URLS = [
   "./",
   "./index.html",
