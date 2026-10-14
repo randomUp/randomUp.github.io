@@ -1,3 +1,4 @@
+let str = "randomArt可视化创意编程";
 function setup() {
   createCanvas(windowWidth, windowHeight);
   colorMode(HSB,360,100,100,100);
