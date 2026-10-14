@@ -3216,42 +3216,59 @@ var BrowserDetect = {};
 /* ============================================================
    script.js 完整版结束
    ============================================================ */
-
 /* ============================================================
-   ★ 兜底：确保汉堡菜单在任何情况下都能点击
-   绕过 FastButton / toggleState 的复杂逻辑
+   ★ 兜底：汉堡菜单点击（原生 JS 版）
+   绕过 jQuery / FastButton / clickbuster
    ============================================================ */
 (function () {
-  // 避免重复绑定
   if (window.__menuToggleBound) return;
   window.__menuToggleBound = true;
 
-  function toggleMenu(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    var $el = $('#menuToggle');
-    if (!$el.length) return;
-
-    var state = $el.data('state') || 'is-active';
-    var isActive = $el.hasClass(state);
-
-    if (isActive) {
-      // 关闭
-      $el.removeClass(state).removeClass('is-inactive');
-      $('html').removeClass('when-Icon-is-active');
-    } else {
-      // 打开
-      $el.addClass(state).removeClass('is-inactive');
-      $('html').addClass('when-Icon-is-active');
+  function setup() {
+    var el = document.getElementById('menuToggle');
+    if (!el) {
+      // DOM 还没就绪，500ms 后重试
+      setTimeout(setup, 500);
+      return;
     }
+
+    console.log('[MenuToggle] 元素已找到，绑定事件');
+
+    var handler = function (e) {
+      // touchend 触发的合成 click 也走这里，所以用 flag 防抖
+      if (e.type === 'click' && el.__touchJustHandled) {
+        el.__touchJustHandled = false;
+        return;
+      }
+      if (e.type === 'touchend') {
+        el.__touchJustHandled = true;
+        setTimeout(function () { el.__touchJustHandled = false; }, 400);
+      }
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      var html = document.documentElement;
+      var isActive = el.classList.contains('is-active');
+
+      console.log('[MenuToggle] 点击，isActive =', isActive);
+
+      if (isActive) {
+        el.classList.remove('is-active');
+        html.classList.remove('when-Icon-is-active');
+      } else {
+        el.classList.add('is-active');
+        html.classList.add('when-Icon-is-active');
+      }
+    };
+
+    el.addEventListener('click', handler, false);
+    el.addEventListener('touchend', handler, false);
   }
 
-  // 用事件委托，兼容动态 DOM
-  $(document)
-    .on('click', '#menuToggle', toggleMenu)
-    .on('touchend', '#menuToggle', function (e) {
-      e.preventDefault();
-      toggleMenu(e);
-    });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setup);
+  } else {
+    setup();
+  }
 })();
