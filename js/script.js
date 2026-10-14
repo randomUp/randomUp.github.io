@@ -31,7 +31,7 @@
   var SEARCH_DEBOUNCE_MS = 150;
   var STORAGE_KB_MULTIPLIER = 2;
   var P5_DIR = "p5/";
-  var P5_CDN = "js/lib/p5.min.js";
+  var P5_CDN = "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js";
   var P5_FILES = ["sketch1.js", "sketch2.js", "sketch3.js"];
   var TOOL_SPECS = [
     {
