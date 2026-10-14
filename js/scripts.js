@@ -3216,3 +3216,42 @@ var BrowserDetect = {};
 /* ============================================================
    script.js 完整版结束
    ============================================================ */
+
+/* ============================================================
+   ★ 兜底：确保汉堡菜单在任何情况下都能点击
+   绕过 FastButton / toggleState 的复杂逻辑
+   ============================================================ */
+(function () {
+  // 避免重复绑定
+  if (window.__menuToggleBound) return;
+  window.__menuToggleBound = true;
+
+  function toggleMenu(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    var $el = $('#menuToggle');
+    if (!$el.length) return;
+
+    var state = $el.data('state') || 'is-active';
+    var isActive = $el.hasClass(state);
+
+    if (isActive) {
+      // 关闭
+      $el.removeClass(state).removeClass('is-inactive');
+      $('html').removeClass('when-Icon-is-active');
+    } else {
+      // 打开
+      $el.addClass(state).removeClass('is-inactive');
+      $('html').addClass('when-Icon-is-active');
+    }
+  }
+
+  // 用事件委托，兼容动态 DOM
+  $(document)
+    .on('click', '#menuToggle', toggleMenu)
+    .on('touchend', '#menuToggle', function (e) {
+      e.preventDefault();
+      toggleMenu(e);
+    });
+})();
