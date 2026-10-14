@@ -177,8 +177,8 @@ Load JSON data
 site.addUI('loadData', {
   gotData: 0,
   onFind: function () {
-    $.get('data.json', function (data) {
-      $.get('members.json', function (memberJSON) {
+    $.get('https://a-g-i.org/data.json', function (data) {
+      $.get('https://a-g-i.org/members.json', function (memberJSON) {
         DATA_projects = data.projects;
         DATA_authors = data.authors;
         DATA_members = memberJSON;
