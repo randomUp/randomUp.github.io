@@ -6829,6 +6829,65 @@ input.ui-button {
   position: relative;
 }
 
+
+/* ============================================================
+   移动端汉堡菜单按钮修复
+   - 加半透明深色圆底 + 白色 ☰ 字符
+   - 保证在任何背景（含 wall 黑底）下都可见
+   ============================================================ */
+@media (max-width: 745px) {
+  .Site-menuLink {
+    display: block !important;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999999999;
+    height: 50px;
+    width: 50px;
+  }
+
+  .Site-menuLink > .Icon--menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: background 0.2s ease;
+  }
+
+  .Site-menuLink > .Icon--menu:hover,
+  .Site-menuLink > .Icon--menu:active {
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  .Site-menuLink > .Icon--menu > span {
+    display: none;
+  }
+
+  .Site-menuLink > .Icon--menu:before {
+    content: '☰';
+    display: block;
+    font-size: 26px;
+    line-height: 1;
+    color: #fff;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  /* 菜单展开时，汉堡变成 ✕ 或变色（可选） */
+  .when-Icon-is-active .Site-menuLink > .Icon--menu {
+    background: #fff;
+  }
+  .when-Icon-is-active .Site-menuLink > .Icon--menu:before {
+    content: '✕';
+    color: #000;
+    font-size: 24px;
+  }
+}
 /* ============================================================
    文件结束
    ============================================================ */
