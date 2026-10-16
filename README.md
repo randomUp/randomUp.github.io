@@ -1,6 +1,6 @@
 ### 而且创意（深圳）让科技+艺术感知生命
 
---
+---
 
 - randomArt可视化创意编程是一款纯前端工具，所有数据存于本地浏览器，无需后端打开即可离线运行。
 - 「首页」随机加载并运行p5.js脚本，支持鼠标与触摸交互。侧边栏可查看、搜索、重命名或删除已保存的作品；点击作品名即可运行，预览模式下可保存PNG。
@@ -10,7 +10,7 @@
 - 对话可导出为Markdown（可读文本）或JSON（含finish_reason、usage、tool_calls等结构化元数据），也可从JSON文件导入对话继续使用（支持追加或覆盖）。
 - 「设置」可调整参数，切换中文/英文，管理本地存储。界面支持亮色/暗色主题切换，通过PWA可在浏览器中「添加到主屏幕」离线使用。
 
---
+---
 
 - randomArt Visual Creative Coding is a pure frontend tool. All data is stored locally in the browser — no backend required, works offline.
 - The home page randomly loads and runs a p5.js sketch, with mouse and touch interaction. The sidebar lets you view, search, rename, or delete saved works; click a title to run it, and capture a PNG screenshot in preview mode.
