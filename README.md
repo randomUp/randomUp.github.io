@@ -1,5 +1,7 @@
 ### 而且创意（深圳）让科技+艺术感知生命
 
+--
+
 - randomArt可视化创意编程是一款纯前端工具，所有数据存于本地浏览器，无需后端打开即可离线运行。
 - 「首页」随机加载并运行p5.js脚本，支持鼠标与触摸交互。侧边栏可查看、搜索、重命名或删除已保存的作品；点击作品名即可运行，预览模式下可保存PNG。
 - 「编写脚本」提供CodeMirror编辑器，支持语法高亮、行号与草稿自动保留,可上传图片,脚本通过imageUrl引用，支持视觉的模型可看图生成像素化、提取配色、调色等处理代码。提交后可预览或下载单个HTML。
@@ -8,7 +10,8 @@
 - 对话可导出为Markdown（可读文本）或JSON（含finish_reason、usage、tool_calls等结构化元数据），也可从JSON文件导入对话继续使用（支持追加或覆盖）。
 - 「设置」可调整参数，切换中文/英文，管理本地存储。界面支持亮色/暗色主题切换，通过PWA可在浏览器中「添加到主屏幕」离线使用。
 
----
+--
+
 - randomArt Visual Creative Coding is a pure frontend tool. All data is stored locally in the browser — no backend required, works offline.
 - The home page randomly loads and runs a p5.js sketch, with mouse and touch interaction. The sidebar lets you view, search, rename, or delete saved works; click a title to run it, and capture a PNG screenshot in preview mode.
 - The Script Editor provides a CodeMirror editor with p5.js syntax highlighting, line numbers, and auto-saved drafts; a persistent top menubar keeps the editor full-width. You can upload an image (auto-compressed to max 1024px on the long edge) — scripts reference it via imageUrl, and vision-capable models can "see" it to generate pixelation, palette extraction, color grading, and other processing code. After submitting, preview it or download a single HTML file.
