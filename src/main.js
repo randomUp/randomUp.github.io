@@ -1,53 +1,142 @@
-/**
- * main.js — 逐模块探针版（仅用于诊断，排查完恢复原版）
- * 每个 import 独立 try/catch，第一个失败的就是问题文件
- */
+/** main.js — 应用入口（无构建，纯 ESM） */
+import { $, $$ } from "./core/dom.js";
+import { detectLang, setLang, setI18nData, applyI18nToStatic } from "./core/i18n.js";
+import { applyTheme } from "./core/theme.js";
+import { loadSettings, setSettingsFromContent } from "./core/settings.js";
+import { storageGet, THEME_KEY } from "./core/storage.js";
+import { initModal, closeModal, isModalOpen } from "./core/modal.js";
+import { getRoute, onRouteChange } from "./core/nav.js";
+import { setAI_MODELS, initAIState } from "./state/ai-state.js";
+import { runner, setRandom } from "./state/runner.js";
+import { refreshEditor } from "./state/editor.js";
+import {
+  bindSidebar, updateSidebarPages, closeSidebar, isSidebarOpen,
+} from "./sidebar.js";
+import { render } from "./router.js";
 
-console.log("[PROBE] main.js 开始");
+const CONTENT_URL = "data/contents.json";
 
-async function probe() {
-  const mods = [
-    "./core/dom.js",
-    "./core/nav.js",
-    "./core/storage.js",
-    "./core/i18n.js",
-    "./core/modal.js",
-    "./core/settings.js",
-    "./core/theme.js",
-    "./core/clipboard.js",
-    "./core/page-html.js",
-    "./core/download.js",
-    "./state/pages-state.js",
-    "./state/ai-state.js",
-    "./state/gen-state.js",
-    "./state/editor.js",
-    "./state/runner.js",
-    "./ai/providers.js",
-    "./ai/tools.js",
-    "./ai/model-menu.js",
-    "./pages/home.js",
-    "./pages/about.js",
-    "./pages/generator.js",
-    "./pages/ai.js",
-    "./features/backup.js",
-    "./features/settings-dialog.js",
-    "./sidebar.js",
-    "./router.js",
-  ];
+function initGlobalGuards() {
+  ["gesturestart", "gesturechange", "gestureend"].forEach((type) => {
+    document.addEventListener(type, (e) => e.preventDefault(), { passive: false });
+  });
 
-  for (const path of mods) {
-    try {
-      const m = await import(path);
-      console.log("[PROBE] OK  ", path, "→ exports:", Object.keys(m).join(","));
-    } catch (e) {
-      console.error("[PROBE] FAIL", path);
-      console.error("        ", e && e.message);
-      console.error("        stack:", e && e.stack);
-      // 继续测下一个，方便一次看全
-    }
+  /** 若触摸发生在 #app.preview-mode 内（iframe 区域），让事件正常进入 iframe */
+  function _isInPreviewArea(target) {
+    try { return !!(target && target.closest && target.closest("#app.preview-mode")); }
+    catch (e) { return false; }
   }
 
-  console.log("[PROBE] 全部模块加载完毕");
+  document.addEventListener("touchstart", (e) => {
+    if (e.touches && e.touches.length > 1) {
+      if (_isInPreviewArea(e.target)) return;
+      e.preventDefault();
+    }
+  }, { passive: false });
+  document.addEventListener("touchmove", (e) => {
+    if (e.touches && e.touches.length > 1) {
+      if (_isInPreviewArea(e.target)) return;
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  let lastTouchEnd = 0;
+  document.addEventListener("touchend", (e) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      const t = e.target;
+      const tag = t && t.tagName ? t.tagName.toLowerCase() : "";
+      if (tag !== "input" && tag !== "textarea" && tag !== "button" && tag !== "select" && tag !== "a") {
+        e.preventDefault();
+      }
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+
+  document.addEventListener("pointerdown", (e) => {
+    const aiMenu = $("#aiModelMenu");
+    if (aiMenu && aiMenu.classList.contains("show")) {
+      const picker = aiMenu.parentNode;
+      if (picker && !picker.contains(e.target)) aiMenu.classList.remove("show");
+    }
+    const genMenu = $("#genModelMenu");
+    if (genMenu && genMenu.classList.contains("show")) {
+      const gPicker = genMenu.parentNode;
+      if (gPicker && !gPicker.contains(e.target)) genMenu.classList.remove("show");
+    }
+    if (!e.target.closest(".ai-msg")) {
+      $$(".ai-msg.actions-visible").forEach((el) => el.classList.remove("actions-visible"));
+    }
+  });
+
+  document.addEventListener("pointerdown", (e) => {
+    const t = e.target;
+    if (!t || !t.closest) return;
+    if (t.closest("input, textarea, select, [contenteditable]")) return;
+    if (t.closest(".CodeMirror")) return;
+    if (t.closest(".ai-model-picker")) return;
+    if (t.closest(".modal-backdrop")) return;
+    if (t.closest("button")) return;
+    const active = document.activeElement;
+    if (!active) return;
+    const tag = active.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || active.isContentEditable) active.blur();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (isModalOpen()) closeModal();
+    else if (isSidebarOpen()) closeSidebar();
+    else if (runner.mode === "page" && getRoute() === "/") setRandom();
+  });
+
+  window.addEventListener("orientationchange", () => refreshEditor());
+
+  let resizeTimer = null;
+  window.addEventListener("resize", () => {
+    const appEl = $("#app");
+    if (appEl && appEl.classList.contains("preview-mode")) {
+      appEl.style.width = window.innerWidth + "px";
+      appEl.style.height = window.innerHeight + "px";
+    }
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => { resizeTimer = null; refreshEditor(); }, 100);
+  });
 }
 
-probe();
+function loadContent() {
+  return fetch(CONTENT_URL, { cache: "no-cache" })
+    .then((r) => {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    })
+    .then((json) => {
+      const content = json || {};
+      setI18nData(content.i18n || {}, content.defaultLang);
+      setAI_MODELS(content.models || []);
+      setSettingsFromContent(content.settings);
+    });
+}
+
+function boot() {
+  initModal();
+  bindSidebar();
+  initGlobalGuards();
+
+  applyTheme(storageGet(THEME_KEY, "light"));
+  loadSettings();
+  setLang(detectLang());
+  initAIState();
+  applyI18nToStatic();
+  updateSidebarPages();
+
+  onRouteChange(render);
+  render();
+}
+
+loadContent()
+  .then(() => boot())
+  .catch((e) => {
+    console.warn("[contents.json] 加载失败，使用默认空文案降级启动：", e);
+    boot();
+  });
