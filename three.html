@@ -1,18 +1,121 @@
-<!doctype html>
+<!DOCTYPE html>
+<!--
+  randomArt 可视化创意编程 — 应用入口
+
+  改造要点（相对最初版本）：
+    1. 无构建：唯一 JS 入口是 <script type="module" src="/src/main.js">
+       —— 原生 ESM，无需 Vite / npm / node_modules。
+    2. 第三方库全部 CDN UMD：
+       - CodeMirror 5.65.16（window.CodeMirror）
+       - JSZip 3.10.1（window.JSZip）
+       —— 均在 module 之前加载，保证 state/editor.js 与 features/backup.js
+          运行时能取到全局对象。
+    3. 主页面无 importmap：
+       —— three.js 只在“已保存作品 iframe”内运行，由 core/page-html.js
+          生成 srcdoc 时注入 importmap；主页面不解析 three 裸说明符。
+    4. CSS 路径：
+       - /css/style.css      （原 src/css/style.css 移到根 css/）
+       - /data/content.json  （原 public/data/ 移到根 data/，由 main.js fetch）
+    5. PWA：本轮未接。后续若接，在此文件加 <link rel="manifest"> 与 SW 注册。
+    6. viewport 已放开 user-scalable（WCAG 1.4.4）；多指锁定由 main.js 的
+       initGlobalGuards 按“预览 iframe 例外”策略控制，本文件不负责。
+    7. 所有 data-i18n* 属性由 core/i18n.js 的 applyI18nToStatic() 消费；
+       JS 加载失败时界面仍显示中文兜底文本。
+-->
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
+
+    <!--
+      viewport：
+        - width=device-width / initial-scale=1.0 为基本适配
+        - viewport-fit=cover 让 iOS 刘海屏安全区生效（配合 CSS env(safe-area-inset-*)）
+        - 不写 maximum-scale / user-scalable=no：允许用户缩放（无障碍）
+        - 实际“禁止双指缩放屏幕”由 main.js 的 initGlobalGuards 实现，
+          且对 #app.preview-mode（作品预览 iframe）放行
+    -->
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <meta 
-      name="description" 
-      content="而且创意（深圳）提供艺术与科技定制化内容构建AI智能创意运维、通过跨界行销、艺术策展、创意三个维度提升品牌价值" 
-      />
-      
-    <title>而且创意(深圳)让科技+艺术感知生命</title>
 
+    <!-- 让浏览器原生控件（滚动条、表单、日期选择器）跟随亮/暗主题 -->
+    <meta name="color-scheme" content="light dark" />
+
+    <!-- PWA / 移动端地址栏主题色（若未来接 PWA 可保留） -->
+    <meta
+      name="theme-color"
+      content="#ffffff"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#1e1e1e"
+      media="(prefers-color-scheme: dark)"
+    />
+
+    <!-- SEO / 分享卡片描述 -->
+    <meta
+      name="description"
+      content="randomArt 可视化创意编程 —— 纯前端 p5.js / three.js 脚本编辑器与 AI 助手，所有数据仅存本地浏览器，无需后端，可离线运行。"
+    />
+
+    <!--
+      标题：
+        data-i18n="site.title" 让 applyI18nToStatic 在切换语言时同步
+        document.title（见 core/i18n.js 的 text 分支处理 <title>）。
+        内联文本是 JS 未加载时的兜底。
+    -->
+    <title data-i18n="site.title">randomArt可视化创意编程</title>
+
+    <!--
+      favicon：内联 SVG 兜底，避免 favicon.ico 404。
+      若后续补 /icons/favicon.svg，可换为 <link rel="icon" href="/icons/favicon.svg">
+    -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%23007bff'/%3E%3Ctext x='50' y='68' font-size='58' text-anchor='middle' fill='%23fff' font-family='system-ui'%3Ep5%3C/text%3E%3C/svg%3E"
+    />
+
+    <!--
+      主题预闪脚本：
+        必须在 CSS 与 body 渲染之前执行，把 html 加上 .dark-mode，
+        避免暗色用户看到首屏白闪。
+        - 变量名 p5_theme 与 core/storage.js 的 THEME_KEY 一致
+        - 用 JSON.parse 与 storageGet 的序列化格式保持一致
+        - html.dark-mode 是 css/style.css 里的暗色变量选择器
+    -->
+    <script>
+      (function () {
+        try {
+          var raw = localStorage.getItem("p5_theme");
+          var theme = raw ? JSON.parse(raw) : "light";
+          if (theme === "dark") {
+            document.documentElement.classList.add("dark-mode");
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <!--
+      ================================================================
+      CodeMirror 5.65.16（UMD，全局 window.CodeMirror）
+      ----------------------------------------------------------------
+      为什么不是 ESM：
+        CodeMirror 5 的 mode 文件（mode/javascript/javascript.js）内部
+        直接调用 CodeMirror.defineMode(...)，依赖全局实例；即使通过
+        esm.sh 加载主文件，mode 注册也会失败。
+      加载顺序：
+        - 三个 CSS 必须在 body 渲染前加载（避免编辑器初建时无样式）
+        - 两个 <script src> 必须出现在 <script type="module" src="main.js">
+          之前；普通 script 是同步阻塞的，module 天然 defer，因此顺序保证。
+      主题：
+        - duotone-light：亮色主题（applyTheme("light") 时 setOption）
+        - dracula：暗色主题（applyTheme("dark") 时 setOption）
+        两套 CSS 选择器隔离（.cm-s-duotone-light / .cm-s-dracula），
+        同时存在无冲突，无需 disabled 切换。
+      ================================================================
+    -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"
@@ -20,21 +123,65 @@
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/duotone-light.min.css"
-      id="cm-theme-light"
     />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css"
-      id="cm-theme-dark"
-      disabled
     />
-    <link rel="stylesheet" href="css/styles.css" />
-    
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+
+    <!--
+      ================================================================
+      JSZip 3.10.1（UMD，全局 window.JSZip）
+      ----------------------------------------------------------------
+      使用方：features/backup.js
+        - exportZip()      导出全部作品 ZIP
+        - packSelected()   打包选中存储项
+      加载时机：与 CodeMirror 同理，先于 module。若 CDN 失败，
+      backup.js 内 new window.JSZip() 会抛错，但只影响导出功能，
+      不影响编辑器与 AI 助手。
+      ================================================================
+    -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
+    <!--
+      自己的样式（原 src/css/style.css 移到根 css/）
+      加载顺序必须在 CodeMirror CSS 之后：
+        style.css 里有 .form-group .CodeMirror { height: ... } 等覆写规则，
+        靠“同特异性后写优先”生效，不能放到 CodeMirror CSS 前面。
+    -->
+    <link rel="stylesheet" href="css/styles.css" />
   </head>
+
   <body>
+    <!--
+      无 JS 降级提示：
+        内联样式而非走 style.css，因为若 JS 未加载，data-i18n 也不会应用，
+        这份提示应保持“零依赖可用”。
+    -->
+    <noscript>
+      <div
+        style="
+          padding: 32px 16px;
+          text-align: center;
+          font-family: system-ui, -apple-system, sans-serif;
+          color: #333;
+        "
+      >
+        本应用需要 JavaScript 才能运行。<br />
+        请在浏览器设置中启用 JavaScript 后刷新页面。
+      </div>
+    </noscript>
+
+    <!--
+      汉堡按钮：
+        - fixed 定位，点击由 sidebar.js 的 bindHamburger 绑定 openSidebar
+        - aria-expanded 由 open/closeSidebar 同步
+        - aria-controls="sidebar" 指向下方 <nav id="sidebar">
+        - data-i18n-aria="nav.openMenu" 让 applyI18nToStatic 设置 aria-label
+        - body.sidebar-open 时通过 CSS 淡出（transform + opacity）
+    -->
     <button
       class="hamburger-btn"
       id="hamburgerBtn"
@@ -45,18 +192,57 @@
       ☰
     </button>
 
-    <nav class="sidebar" id="sidebar" aria-label="主导航">
+    <!--
+      ================================================================
+      侧边栏
+      ----------------------------------------------------------------
+      结构：
+        .sidebar-search  搜索框（防抖 150ms，见 sidebar.js bindSearch）
+        .nav-item        首页 / 关于 / AI助手 / 编写脚本
+        .divider + .section-title + #sidebar-pages
+                         作品列表（由 updateSidebarPages 渲染）
+        .sidebar-footer  设置 / 切换主题（两枚按钮）
+      交互：
+        - 所有 .nav-item[data-path] 的点击由 sidebar.js bindNavItems 绑定
+        - #sidebar-pages 内的按钮由事件委托处理（open / rename / delete）
+        - #settingsSidebar 打开设置弹窗（features/settings-dialog.js）
+        - #themeToggleSidebar 调 core/theme.js 的 toggleTheme
+      ================================================================
+    -->
+    <nav
+      class="sidebar"
+      id="sidebar"
+      aria-label="主导航"
+      data-i18n-aria="nav.mainAria"
+    >
+      <!--
+        搜索框：
+          - type="search" 触发浏览器原生清空按钮（CSS 定制外观）
+          - data-i18n-placeholder 让 applyI18nToStatic 同时设置
+            placeholder 与 aria-label（见 core/i18n.js 的 placeholder 分支）
+          - 输入防抖后调 updateSidebarPages 重新过滤列表
+      -->
       <div class="sidebar-search">
         <input
           type="search"
           id="sidebarSearch"
-          placeholder="搜索脚本..."
+          placeholder="搜索作品..."
           autocomplete="off"
-          aria-label="搜索脚本"
+          aria-label="搜索作品"
           data-i18n-placeholder="nav.searchPlaceholder"
         />
       </div>
 
+      <!--
+        首页：
+          - data-path="#/" 对应 router.getRoute() 的 "/"
+          - 点击行为：sidebar.js 的 bindNavItems 会调 state/runner.setRandom()
+            （切回 random 模式后再 setHash("/")，确保重挑随机文件）
+          - role="button" + tabindex="0" 支持键盘 Enter/Space
+            （bindNavItems 内已绑定 keydown）
+          - data-i18n="nav.home" 让 applyI18nToStatic 只改 <span> 文本，
+            保留 <svg>
+      -->
       <div
         class="nav-item"
         data-path="#/"
@@ -64,9 +250,22 @@
         tabindex="0"
         data-i18n="nav.home"
       >
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <svg
+          class="nav-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
         <span>首页</span>
       </div>
+
+      <!-- 关于 -->
       <div
         class="nav-item"
         data-path="#/about"
@@ -74,9 +273,24 @@
         tabindex="0"
         data-i18n="nav.about"
       >
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <svg
+          class="nav-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          <path
+            d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+          />
+        </svg>
         <span>关于</span>
       </div>
+
+      <!-- AI 助手 -->
       <div
         class="nav-item"
         data-path="#/ai"
@@ -84,9 +298,23 @@
         tabindex="0"
         data-i18n="nav.ai"
       >
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="16" r="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <svg
+          class="nav-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="3" y="11" width="18" height="10" rx="2" />
+          <circle cx="12" cy="16" r="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
         <span>AI助手</span>
       </div>
+
+      <!-- 编写脚本 -->
       <div
         class="nav-item"
         data-path="#/generator"
@@ -94,28 +322,73 @@
         tabindex="0"
         data-i18n="nav.generator"
       >
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <svg
+          class="nav-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 20h9" />
+          <path
+            d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"
+          />
+        </svg>
         <span>编写脚本</span>
       </div>
+
+      <!-- 分隔线 + 作品列表区标题 -->
       <div class="divider"></div>
-      <div class="section-title" data-i18n="nav.myScripts">我的脚本</div>
+      <div class="section-title" data-i18n="nav.myScripts">我的作品</div>
+
+      <!--
+        作品列表容器：
+          - 初始放一条“暂无”占位（JS 未加载时也能看到）
+          - updateSidebarPages() 会整体 replaceChildren
+          - 事件委托（open / rename / delete）绑在此容器上
+          - 由 app:pagesChanged 事件驱动刷新（见 sidebar.js bindPagesChanged）
+      -->
       <div id="sidebar-pages">
-        <div class="no-pages" data-i18n="nav.noScripts">暂无编写的脚本</div>
+        <div class="no-pages" data-i18n="nav.noScripts">暂无编写的作品</div>
       </div>
 
+      <!--
+        侧边栏底部：设置 / 切换主题
+          - 两按钮 flex:1，中间一条竖分隔线
+          - 均支持键盘 Enter/Space（sidebar.js bindFooterButtons）
+          - #settingsSidebar 的 id 曾为 exportZipSidebar（历史遗留），已修正
+      -->
       <div class="sidebar-footer">
         <div class="footer-row">
           <div
             class="nav-item footer-item"
-            id="exportZipSidebar"
+            id="settingsSidebar"
             role="button"
             tabindex="0"
             data-i18n="nav.settings"
           >
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            <svg
+              class="nav-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+              />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </svg>
             <span>设置</span>
           </div>
+
           <div class="footer-vdivider"></div>
+
           <div
             class="nav-item footer-item"
             id="themeToggleSidebar"
@@ -123,31 +396,90 @@
             tabindex="0"
             data-i18n="nav.themeToggle"
           >
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <svg
+              class="nav-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              />
+            </svg>
             <span>切换主题</span>
           </div>
         </div>
       </div>
     </nav>
 
+    <!--
+      遮罩：
+        - 侧边栏打开时 .show，点击关闭（sidebar.js bindHamburger）
+        - CSS 用 visibility + opacity 实现真正淡入（原代码 display:none→block
+          与 opacity 同帧不触发 transition）
+        - z-index 150 < sidebar 200 < hamburger 300
+    -->
     <div class="overlay" id="overlay"></div>
 
+    <!--
+      主内容区：
+        - router.render() 按路由分派：
+            "/"          → pages/home.js renderRunner（内部会加 .preview-mode）
+            "/ai"        → pages/ai.js renderAIAssistant + bindAIAssistant
+            "/about"     → pages/about.js renderAbout
+            "/generator" → pages/generator.js renderGenerator + bindGenerator
+            其它          → 404 提示
+        - data-i18n="site.loading" 是首屏占位文案，render 后会被替换
+        - 高度：普通页 min-height 100dvh；ai-mode / preview-mode 有独立布局
+    -->
     <main id="app" data-i18n="site.loading">加载中…</main>
 
+    <!--
+      ================================================================
+      模态框根
+      ----------------------------------------------------------------
+      - hidden + aria-hidden="true" 为初始权威隐藏状态
+        （core/modal.js openModal 会移除 hidden 并加 .show；
+         closeModal 反向操作。CSS 有 .modal-backdrop[hidden] 强制隐藏）
+      - role="dialog" + aria-modal="true"
+      - aria-labelledby 由 openModal 动态设置到内部 h3 的 id
+      - 点击背景关闭：core/modal.js initModal 绑定
+      - 焦点陷阱：openModal 时安装（Tab 循环）、closeModal 时卸载
+      ================================================================
+    -->
     <div
       class="modal-backdrop"
       id="modalBackdrop"
       role="dialog"
       aria-modal="true"
+      hidden
+      aria-hidden="true"
     >
       <div class="modal" id="modalBox"></div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
-
+    <!--
+      ================================================================
+      唯一 JS 入口（原生 ESM）
+      ----------------------------------------------------------------
+      - type="module" 天然 defer，在 DOM 解析完成后执行
+      - 依赖的第三方全局（window.CodeMirror / window.JSZip）已在上方加载
+      - 主页面没有 importmap；three.js 只在作品 iframe 内（由
+        core/page-html.js 生成 srcdoc 时注入）
+      - 加载链路：
+          main.js
+            ├─ core/*（dom / nav / storage / modal / settings / i18n / theme）
+            ├─ state/*（ai-state / gen-state / pages-state / runner / editor）
+            ├─ ai/*（providers / tools / model-menu）
+            ├─ pages/*（home / about / generator / ai）
+            ├─ features/*（backup / settings-dialog）
+            ├─ router.js + sidebar.js
+            └─ loadContent() → fetch("data/content.json") → boot()
+      ================================================================
+    -->
     <script type="module" src="src/main.js"></script>
-
-
   </body>
 </html>
