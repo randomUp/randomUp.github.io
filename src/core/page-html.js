@@ -1,11 +1,10 @@
 /**
- * core/page-html.js — 生成作品 HTML（支持 p5 / three 两种引擎）
- * three 分支注入 importmap + <script type="module">
+ * core/page-html.js — 生成作品 HTML（p5 / three 两种引擎）
  */
 import { escapeHtml, escapeScriptClose } from "./dom.js";
 
 const P5_CDN = "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js";
-const THREE_VERSION = "0.186.0"; // 升级 three 只改此常量
+const THREE_VERSION = "0.186.0";
 
 function _threeImportMapBlock() {
   return (
@@ -20,7 +19,6 @@ function _threeImportMapBlock() {
   );
 }
 
-/** 新签名：({ engine, title, code, imageDataUrl, hasImage, maxTitleLen }) */
 export function generatePageHtml(a, b, c, d, e) {
   if (arguments.length > 1 && typeof a === "string") {
     return _generateP5Html(a, b, c, d, e);
@@ -54,7 +52,9 @@ function _generateP5Html(title, script, imageDataUrl, hasImage, maxTitleLen) {
     "  </style>\n" +
     '  \x3Cscript src="' + P5_CDN + '">\x3C/script>\n' +
     "</head>\n<body>\n" +
-    "  \x3Cscript>\n    " + safeImgVar + "\n    " + safeScript + "\n  \x3Cscript>\n" +
+    "  \x3Cscript>\n    " + safeImgVar + "\n    " + safeScript + "\n" +
+    // 🔧 修复：结尾 </script>，原为 \x3Cscript>
+    "  \x3C/script>\n" +
     "</body>\n</html>"
   );
 }
@@ -75,8 +75,12 @@ function _generateThreeHtml(opts) {
     "    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; touch-action: none; }\n" +
     "    canvas { display: block; touch-action: none; }\n" +
     "  </style>\n</head>\n<body>\n" +
-    "  \x3Cscript>\n    " + safeImgVar + "\n  \x3Cscript>\n" +
-    '  \x3Cscript type="module">\n    ' + safeCode + "\n  \x3Cscript>\n" +
+    "  \x3Cscript>\n    " + safeImgVar +
+    // 🔧 修复：结尾 </script>，原为 \x3Cscript>
+    "\n  \x3C/script>\n" +
+    '  \x3Cscript type="module">\n    ' + safeCode +
+    // 🔧 修复：结尾 </script>，原为 \x3Cscript>
+    "\n  \x3C/script>\n" +
     "</body>\n</html>"
   );
 }
