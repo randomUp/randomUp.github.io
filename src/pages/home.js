@@ -19,7 +19,7 @@ function pickRandomP5File() {
 }
 
 function encodePath(fileName) {
-  return String(fileName).split("../").map((s) => encodeURIComponent(s)).join("../");
+  return String(fileName).split("/").map((s) => encodeURIComponent(s)).join("/");
 }
 
 function buildP5SrcDoc(fileName) {
@@ -33,7 +33,8 @@ function buildP5SrcDoc(fileName) {
     "    canvas { display: block; touch-action: none; }\n" +
     "  </style>\n" +
     '  \x3Cscript src="' + P5_CDN + '">\x3C/script>\n' +
-    '  \x3Cscript src="' + src + '">\x3Cscript>\n' +
+    '  \x3Cscript src="' + src + '">\x3C/script>\n' +
+    
     "</head>\n<body></body>\n</html>"
   );
 }
