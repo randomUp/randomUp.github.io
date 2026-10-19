@@ -111,7 +111,8 @@ export function executeToolCall(toolName, args) {
 export function extractCodeFromText(text) {
   if (!text) return null;
   const t = String(text);
-  const m;
+  // ✅ 修复：const m; 是语法错误（const 必须初始化），改为 let m;
+  let m;
   const jsBlocks = [];
   const reJs = /```(?:js|javascript)\s*\n([\s\S]*?)```/gi;
   while ((m = reJs.exec(t))) if (m[1]) jsBlocks.push(m[1].replace(/\s+$/, ""));
