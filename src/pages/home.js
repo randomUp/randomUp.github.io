@@ -6,7 +6,7 @@ import { showAlert } from "../core/modal.js";
 import { getPages, sessionImages } from "../state/pages-state.js";
 import { runner, randomFileRef } from "../state/runner.js";
 
-const P5_DIR = "../p5/";
+const P5_DIR = "p5/";
 const P5_CDN = "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js";
 const P5_FILES = ["sketch1.js", "sketch2.js", "sketch3.js"];
 
@@ -19,7 +19,7 @@ function pickRandomP5File() {
 }
 
 function encodePath(fileName) {
-  return String(fileName).split("/").map((s) => encodeURIComponent(s)).join("/");
+  return String(fileName).split("../").map((s) => encodeURIComponent(s)).join("../");
 }
 
 function buildP5SrcDoc(fileName) {
