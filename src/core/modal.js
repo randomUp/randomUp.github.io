@@ -1,6 +1,8 @@
 /** core/modal.js — 模态框基座 + 6 种常用对话框 */
 import { $, el, rightGroup } from "./dom.js";
 import { T } from "./i18n.js";
+// ✅ 修复：向外部再导出 rightGroup，供 ai.js / settings-dialog.js / sidebar.js 使用
+export { rightGroup };
 
 let lastFocused = null;
 let focusTrapHandler = null;
@@ -15,8 +17,13 @@ function installFocusTrap(box) {
     if (!focusables.length) return;
     const first = focusables[0];
     const last = focusables[focusables.length - 1];
-    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   };
   box.addEventListener("keydown", focusTrapHandler);
 }
