@@ -3,7 +3,8 @@
  *
  * three 引擎：
  *   - 不注入 importmap（iOS Safari 的 srcdoc iframe 不支持）
- *   - 自动注入 import * as THREE from CDN，用户代码直接用 THREE.xxx
+ *   - 自动注入 THREE，并包装 WebGLRenderer 强制 preserveDrawingBuffer: true
+ *     （让 canvas.toDataURL 能正常截图，避免输出黑图）
  *   - 用户代码约束（禁止 import、禁用 addons、只用 TouchEvent）由
  *     content.json 的 gen.systemPromptThree 告知 AI
  */
@@ -72,7 +73,25 @@ function _generateThreeHtml(opts) {
     ? 'var imageUrl = "' + opts.imageDataUrl + '";'
     : "var imageUrl = null;";
   const safeImgVar = escapeScriptClose(imgVar);
-  const safeCode = escapeScriptClose(opts.code || "");
+  const code = opts.code || "";
+  const safeCode = escapeScriptClose(code);
+  const hasImport = /^\s*import\s+/m.test(code);
+
+  // 用户代码含 import 时无法包装 THREE（THREE 由用户自己定义），跳过注入
+  const injectBlock = hasImport
+    ? ""
+    : `    import * as _THREE_NS from "${THREE_URL}";\n` +
+      "    // 复制为可写对象，并强制 preserveDrawingBuffer: true，让截图功能可用\n" +
+      "    const THREE = Object.assign({}, _THREE_NS);\n" +
+      "    {\n" +
+      "      const _OrigRenderer = _THREE_NS.WebGLRenderer;\n" +
+      "      THREE.WebGLRenderer = class extends _OrigRenderer {\n" +
+      "        constructor(params) {\n" +
+      "          super(Object.assign({}, params || {}, { preserveDrawingBuffer: true }));\n" +
+      "        }\n" +
+      "      };\n" +
+      "    }\n\n";
+
   return (
     "<!DOCTYPE html>\n" +
     '<html lang="zh-CN">\n' +
@@ -88,7 +107,7 @@ function _generateThreeHtml(opts) {
     safeImgVar +
     "\n  \x3C/script>\n" +
     '  \x3Cscript type="module">\n' +
-    '    import * as THREE from "' + THREE_URL + '";\n\n' +
+    injectBlock +
     "    " + safeCode +
     "\n  \x3C/script>\n" +
     "</body>\n</html>"
