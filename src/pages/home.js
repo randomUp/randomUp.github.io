@@ -206,7 +206,8 @@ export function renderRunner() {
   iframe.addEventListener("load", () => bindIframeProxy(iframe, engine));
   appEl.appendChild(iframe);
 
-  if (runner.mode === "page" && currentPage && currentPage.engine !== "three") {
+  // 所有已保存作品都显示截图按钮（three 已在 HTML 层强制 preserveDrawingBuffer: true）
+  if (runner.mode === "page" && currentPage) {
     appEl.appendChild(buildScreenshotButton(iframe));
   }
 }
