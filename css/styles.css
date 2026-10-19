@@ -1671,3 +1671,11 @@ button:disabled {
     scroll-behavior: auto !important;
   }
 }
+@media (max-width: 768px) {
+  input,
+  textarea,
+  select,
+  .CodeMirror textarea {
+    font-size: 16px !important;
+  }
+}
