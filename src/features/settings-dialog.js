@@ -40,10 +40,9 @@ function _buildLangSection() {
       const next = btn.dataset.lang;
       if (!next || next === getLang()) return;
       setLang(next); applyI18nToStatic();
+      try { window.dispatchEvent(new CustomEvent("app:pagesChanged")); } catch (e) {}
       closeModal(); emitRoute(); showSettingsDialog();
     });
-    langGroup.appendChild(btn);
-  });
   langSec.appendChild(langGroup);
   return langSec;
 }
