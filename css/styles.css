@@ -1375,13 +1375,13 @@ button:disabled {
   display: flex;
   gap: 6px;
   margin-top: -8px;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
 }
 .engine-switch-menubar button {
   /* 字号：标题 1rem → 按钮 0.5rem（严格一半） */
   font-size: 0.8rem;
   /* 用 padding 撑出足够的点击区域，弥补小字号 */
-  padding: 8px 8px;
+  padding: 3px 9px;
   border: 1px solid var(--border-input);
   background: var(--input-bg-fill);
   color: var(--text);
