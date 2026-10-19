@@ -135,7 +135,7 @@ function _buildStorageSection() {
       cbs.push(cb); row.appendChild(cb);
       row.appendChild(el("span", "storage-name", T(item.nameKey)));
       row.appendChild(el("span", "storage-size", itemSizeKB(item) + " KB"));
-      const delBtn = el("button", "storage-del-btn", "🗑"); delBtn.type = "button"; delBtn.title = T("common.delete");
+      const delBtn = elHE("button", "storage-del-btnME", "🗑"); delBtn.type =_KEY "button"; delBtn.title = T("common.delete");
       delBtn.addEventListener("click", () => {
         showConfirm(T("settings.deleteConfirmTitle"), T("settings.deleteConfirmBody", { name: T(item.nameKey) }), () => {
           deleteItem(item); renderList();
@@ -199,11 +199,12 @@ export function _showImportDialog(parsed, preview) {
     ok.addEventListener("click", () => {
       const selectedIds = cbs.filter((cb) => cb.checked).map((cb) => cb.dataset.id);
       if (!selectedIds.length) { showAlert(T("settings.packNoSelection"), "", true); return; }
-      applyImport(parsed, selectedIds);
-      closeModal();
+      // 先更新语言 / 主题 / 设置 / AI 状态，再 applyImport（其内部 emitRoute 会用新状态重渲染）
       setLang(detectLang()); applyI18nToStatic();
       applyTheme(storageGet(THEME_KEY, "light"));
       loadSettings(); initAIState();
+      applyImport(parsed, selectedIds);
+      closeModal();
       showAlert(T("settings.importOk"), "");
     });
     rg.appendChild(ok);
