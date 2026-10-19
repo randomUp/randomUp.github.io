@@ -1333,42 +1333,60 @@ button:disabled {
     - 现改为 space-between：标题左，引擎切换按钮右
     - .generator-menubar-help 相关规则已删除
 */
+/* ============================================================
+   编辑器 menubar
+   ------------------------------------------------------------
+   布局：
+     - 标题区固定 56px 高，垂直居中 → 与左侧汉堡按钮平齐（位置不变）
+     - 引擎切换按钮在标题下方，水平居中
+     - 按钮字号 = 标题字号的一半（0.5rem）
+   ============================================================ */
 .generator-menubar {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 50px 16px 10px;
   background: var(--surface);
   border-bottom: 1px solid var(--line);
 }
 
+/* 标题区：保持原 56px 高度，垂直居中 → 与汉堡平齐 */
 .generator-menubar-title {
-  font-size: 0.95rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
   font-weight: bold;
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
-  max-width: 100%;
+  width: 100%;
+  /* 左侧留出汉堡空间，避免长标题与汉堡重叠；短标题仍能居中 */
+  padding-left: 60px;
+  padding-right: 16px;
+  box-sizing: border-box;
 }
 
+/* 引擎切换：在标题下方，水平居中，字号为标题的一半 */
 .engine-switch-menubar {
   display: flex;
   gap: 6px;
+  margin-bottom: 8px;
 }
 
 .engine-switch-menubar button {
-  padding: 4px 14px;
+  /* 字号：标题 1rem → 按钮 0.5rem（严格一半） */
+  font-size: 0.5rem;
+  /* 用 padding 撑出足够的点击区域，弥补小字号 */
+  padding: 6px 16px;
   border: 1px solid var(--border-input);
   background: var(--input-bg-fill);
   color: var(--text);
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.78rem;
   font-family: inherit;
   line-height: 1.4;
   transition:
