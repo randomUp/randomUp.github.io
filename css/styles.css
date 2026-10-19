@@ -1671,25 +1671,3 @@ button:disabled {
     scroll-behavior: auto !important;
   }
 }
-/* ============================================================
-   iOS Safari 防自动放大
-   ------------------------------------------------------------
-   iOS 在聚焦 font-size < 16px 的 input/textarea 时会自动放大页面，
-   且聚焦完成后不会自动缩回。修法是把实际字号提到 16px。
-   对 CodeMirror：隐藏 textarea 是 16px，可视代码仍 14px（不受影响）。
-   ============================================================ */
-.CodeMirror textarea {
-  font-size: 16px !important;
-}
-.modal textarea {
-  font-size: 16px;
-}
-
-@media (max-width: 768px) {
-  input,
-  textarea,
-  select,
-  .CodeMirror textarea {
-    font-size: 16px !important;
-  }
-}
