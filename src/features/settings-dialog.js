@@ -199,7 +199,6 @@ export function _showImportDialog(parsed, preview) {
     ok.addEventListener("click", () => {
       const selectedIds = cbs.filter((cb) => cb.checked).map((cb) => cb.dataset.id);
       if (!selectedIds.length) { showAlert(T("settings.packNoSelection"), "", true); return; }
-      // 先更新语言 / 主题 / 设置 / AI 状态，再 applyImport（其内部 emitRoute 会用新状态重渲染）
       setLang(detectLang()); applyI18nToStatic();
       applyTheme(storageGet(THEME_KEY, "light"));
       loadSettings(); initAIState();
