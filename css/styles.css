@@ -1673,3 +1673,26 @@ button:disabled {
     scroll-behavior: auto !important;
   }
 }
+/* ============================================================
+   编辑器聚焦：不要任何边框 / 轮廓 / 阴影
+   ------------------------------------------------------------
+   :focus-visible 的通用焦点环对 CodeMirror 不适用——
+   编辑器本身就占大面积，加 outline 会形成显眼的蓝色框。
+   这里针对 CodeMirror 全部相关元素统一清掉。
+   ============================================================ */
+.CodeMirror,
+.CodeMirror-focused,
+.CodeMirror-scroll,
+.CodeMirror-gutters,
+.generator-form-group .CodeMirror,
+.generator-form-group .CodeMirror-focused {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.CodeMirror textarea,
+.CodeMirror textarea:focus,
+.CodeMirror textarea:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
