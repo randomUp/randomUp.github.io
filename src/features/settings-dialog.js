@@ -204,6 +204,7 @@ export function _showImportDialog(parsed, preview) {
       setLang(detectLang()); applyI18nToStatic();
       applyTheme(storageGet(THEME_KEY, "light"));
       loadSettings(); initAIState();
+      emitRoute();
       showAlert(T("settings.importOk"), "");
     });
     rg.appendChild(ok);
