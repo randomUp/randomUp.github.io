@@ -25,7 +25,9 @@ function encodePath(fileName) {
 function buildP5SrcDoc(fileName) {
   const src = P5_DIR + encodePath(fileName);
   return (
-    "<!DOCTYPE html>\n" + '<html lang="zh-CN">\n' + "<head>\n" +
+    "<!DOCTYPE html>\n" +
+    '<html lang="zh-CN">\n' +
+    "<head>\n" +
     '  <meta charset="UTF-8">\n' +
     '  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
     "  <style>\n" +
@@ -34,7 +36,6 @@ function buildP5SrcDoc(fileName) {
     "  </style>\n" +
     '  \x3Cscript src="' + P5_CDN + '">\x3C/script>\n' +
     '  \x3Cscript src="' + src + '">\x3C/script>\n' +
-    
     "</head>\n<body></body>\n</html>"
   );
 }
@@ -205,7 +206,6 @@ export function renderRunner() {
   iframe.addEventListener("load", () => bindIframeProxy(iframe, engine));
   appEl.appendChild(iframe);
 
-  // three 作品截图会得到空白（preserveDrawingBuffer: false）
   if (runner.mode === "page" && currentPage && currentPage.engine !== "three") {
     appEl.appendChild(buildScreenshotButton(iframe));
   }
