@@ -1365,8 +1365,8 @@ button:disabled {
   text-align: center;
   width: 100%;
   /* 左侧留出汉堡空间，避免长标题与汉堡重叠；短标题仍能居中 */
-  padding-left: 60px;
-  padding-right: 16px;
+  padding-left: 2px;
+  padding-right: 2px;
   box-sizing: border-box;
 }
 
@@ -1374,14 +1374,14 @@ button:disabled {
 .engine-switch-menubar {
   display: flex;
   gap: 6px;
-  margin-bottom: 8px;
+  margin-bottom: 0px;
 }
 
 .engine-switch-menubar button {
   /* 字号：标题 1rem → 按钮 0.5rem（严格一半） */
-  font-size: 0.5rem;
+  font-size: 0.8rem;
   /* 用 padding 撑出足够的点击区域，弥补小字号 */
-  padding: 6px 16px;
+  padding: 0px 0px;
   border: 1px solid var(--border-input);
   background: var(--input-bg-fill);
   color: var(--text);
