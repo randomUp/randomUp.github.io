@@ -40,12 +40,15 @@ function _buildLangSection() {
       const next = btn.dataset.lang;
       if (!next || next === getLang()) return;
       setLang(next); applyI18nToStatic();
+      // 侧边栏"暂无作品"是 updateSidebarPages 动态生成的节点，
+      // 不在 applyI18nToStatic 覆盖范围，派发 app:pagesChanged 触发重渲染。
       try { window.dispatchEvent(new CustomEvent("app:pagesChanged")); } catch (e) {}
       closeModal(); emitRoute(); showSettingsDialog();
     });
   langSec.appendChild(langGroup);
   return langSec;
 }
+
 
 function _buildParamsSection(box) {
   const paramSec = el("section", "settings-section");
