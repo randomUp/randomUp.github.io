@@ -45,10 +45,11 @@ function _buildLangSection() {
       try { window.dispatchEvent(new CustomEvent("app:pagesChanged")); } catch (e) {}
       closeModal(); emitRoute(); showSettingsDialog();
     });
+    langGroup.appendChild(btn);
+  });
   langSec.appendChild(langGroup);
   return langSec;
 }
-
 
 function _buildParamsSection(box) {
   const paramSec = el("section", "settings-section");
