@@ -1658,7 +1658,11 @@ button:disabled {
   outline: 2px solid var(--primary-focus);
   outline-offset: 2px;
 }
-
+/* 编辑器聚焦不显示轮廓（CodeMirror 内部任意聚焦元素） */
+.CodeMirror :focus,
+.CodeMirror :focus-visible {
+  outline: none;
+}
 /*
   C3：尊重系统 prefers-reduced-motion。
   时长压到 0.01ms 而非 0，避免 transitionend 事件不触发。
@@ -1672,14 +1676,4 @@ button:disabled {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-/* ---------- 18. 无障碍与动效降级 ---------- */
-:focus-visible {
-  outline: 2px solid var(--primary-focus);
-  outline-offset: 2px;
-}
-/* 编辑器聚焦不显示轮廓（CodeMirror 内部任意聚焦元素） */
-.CodeMirror :focus,
-.CodeMirror :focus-visible {
-  outline: none;
 }
