@@ -1,25 +1,21 @@
 /**
  * core/page-html.js — 生成作品 HTML（p5 / three 两种引擎）
  *
- * three 引擎关键改动：
+ * three 引擎：
  *   - 不注入 importmap（iOS Safari 的 srcdoc iframe 不支持）
- *   - 用户代码必须用完整 URL import three
- *   - 手势必须用 TouchEvent（srcdoc iframe 不产生 PointerEvent）
- *   - 以上约束通过 content.json 的 gen.systemPromptThree 告知 AI
+ *   - 自动注入 import * as THREE from CDN，用户代码直接用 THREE.xxx
+ *   - 用户代码约束（禁止 import、禁用 addons、只用 TouchEvent）由
+ *     content.json 的 gen.systemPromptThree 告知 AI
  */
 import { escapeHtml, escapeScriptClose } from "./dom.js";
 
 const P5_CDN = "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js";
-const THREE_VERSION = "0.186.0"; // 升级 three 只改这一处
+const THREE_VERSION = "0.186.0";
+const THREE_URL =
+  "https://cdn.jsdelivr.net/npm/three@" + THREE_VERSION + "/build/three.module.js";
 
-/**
- * three 作品不再注入 importmap。
- * srcdoc iframe 里 importmap 不生效（iOS Safari 限制），
- * 因此用户代码必须用完整 URL import：
- *   import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js";
- * 相机控制必须手写 TouchEvent，不能用 OrbitControls / addons。
- */
 function _threeImportMapBlock() {
+  // 已废弃：srcdoc iframe 不支持 importmap，改为在 _generateThreeHtml 内注入 import。
   return "";
 }
 
@@ -30,13 +26,7 @@ export function generatePageHtml(a, b, c, d, e) {
   const opts = a || {};
   return (opts.engine || "p5") === "three"
     ? _generateThreeHtml(opts)
-    : _generateP5Html(
-        opts.title,
-        opts.code,
-        opts.imageDataUrl,
-        opts.hasImage,
-        opts.maxTitleLen,
-      );
+    : _generateP5Html(opts.title, opts.code, opts.imageDataUrl, opts.hasImage, opts.maxTitleLen);
 }
 
 function _generateP5Html(title, script, imageDataUrl, hasImage, maxTitleLen) {
@@ -90,7 +80,6 @@ function _generateThreeHtml(opts) {
     '  <meta charset="UTF-8">\n' +
     '  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">\n' +
     "  <title>" + safeTitle + "</title>\n" +
-    _threeImportMapBlock() +
     "  <style>\n" +
     "    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; touch-action: none; }\n" +
     "    canvas { display: block; touch-action: none; }\n" +
@@ -98,8 +87,9 @@ function _generateThreeHtml(opts) {
     "  \x3Cscript>\n    " +
     safeImgVar +
     "\n  \x3C/script>\n" +
-    '  \x3Cscript type="module">\n    ' +
-    safeCode +
+    '  \x3Cscript type="module">\n' +
+    '    import * as THREE from "' + THREE_URL + '";\n\n' +
+    "    " + safeCode +
     "\n  \x3C/script>\n" +
     "</body>\n</html>"
   );
@@ -107,9 +97,7 @@ function _generateThreeHtml(opts) {
 
 export function injectSessionImage(html, dataUrl) {
   if (!html || !dataUrl) return html;
-  const escaped = String(dataUrl)
-    .replace(/\\/g, "\\\\")
-    .replace(/"/g, '\\"');
+  const escaped = String(dataUrl).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
   return html.replace(
     /var imageUrl = (?:null|"[^"]*");/,
     'var imageUrl = "' + escapeScriptClose(escaped) + '";',
