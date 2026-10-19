@@ -14,9 +14,13 @@ import {
 } from "./sidebar.js";
 import { render } from "./router.js";
 
+/** ⚠️ 按你实际 json 文件名改 */
 const CONTENT_URL = "data/contents.json";
 
-
+/**
+ * iOS Safari 的 fetch 有时会永久挂起（不 resolve 不 reject）。
+ * 加 5 秒超时兜底：即使 fetch 挂死，5 秒后走 catch → boot() 降级启动。
+ */
 const CONTENT_TIMEOUT_MS = 5000;
 
 function initGlobalGuards() {
@@ -24,22 +28,13 @@ function initGlobalGuards() {
     document.addEventListener(type, (e) => e.preventDefault(), { passive: false });
   });
 
-  function _isInPreviewArea(target) {
-    try { return !!(target && target.closest && target.closest("#app.preview-mode")); }
-    catch (e) { return false; }
-  }
-
+  // 锁定主文档双指/多指缩放（原代码逻辑）。
+  // preventDefault 只阻止浏览器默认行为，不影响 iframe 内部 three 注册的触摸事件。
   document.addEventListener("touchstart", (e) => {
-    if (e.touches && e.touches.length > 1) {
-      if (_isInPreviewArea(e.target)) return;
-      e.preventDefault();
-    }
+    if (e.touches && e.touches.length > 1) e.preventDefault();
   }, { passive: false });
   document.addEventListener("touchmove", (e) => {
-    if (e.touches && e.touches.length > 1) {
-      if (_isInPreviewArea(e.target)) return;
-      e.preventDefault();
-    }
+    if (e.touches && e.touches.length > 1) e.preventDefault();
   }, { passive: false });
 
   let lastTouchEnd = 0;
