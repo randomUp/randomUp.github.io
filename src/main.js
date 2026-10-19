@@ -14,7 +14,7 @@ import {
 } from "./sidebar.js";
 import { render } from "./router.js";
 
-const CONTENT_URL = "data/content.json";
+const CONTENT_URL = "data/contents.json";
 
 function initGlobalGuards() {
   ["gesturestart", "gesturechange", "gestureend"].forEach((type) => {
