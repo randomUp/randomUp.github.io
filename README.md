@@ -1,21 +1,65 @@
-#### 而且创意（深圳）让科技+艺术感知生命
+# 而且创意(深圳)让科技+艺术感知生命
+
+纯前端p5.js/three.js创意编程工具，内置AI助手。所有数据仅存本地浏览器，无需后端打开即可离线使用。
+
+> 「首页」随机运行p5.js脚本
+> 「编写脚本」提供CodeMirror编辑器与AI生成面板，支持p5.js/three.js双引擎
+> 「AI助手」支持多模型流式对话
+> 「设置」管理参数、语言、本地存储
 
 ---
 
-- randomArt可视化创意编程是一款纯前端工具，所有数据存于本地浏览器，无需后端打开即可离线运行。
-- 「首页」随机加载并运行p5.js脚本，支持鼠标与触摸交互。侧边栏可查看、搜索、重命名或删除已保存的作品；点击作品名即可运行，预览模式下可保存PNG。
-- 「编写脚本」提供CodeMirror编辑器，支持语法高亮、行号与草稿自动保留,可上传图片,脚本通过imageUrl引用，支持视觉的模型可看图生成像素化、提取配色、调色等处理代码。提交后可预览或下载单个HTML。
-- 「编写脚本」内置AI生成面板：选择支持函数调用的模型，用自然语言描述效果，AI通过工具调用把代码写入编辑器。编辑器已有内容时，可选择覆盖或让AI基于现有代码修改。
-- 「AI助手」支持ChatGPT、Gemini、DeepSeek流式对话，也可自定义OpenAI兼容模型。每个模型独立配置API Key与系统提示词，支持「测试连接」验证配置。对话记录按模型分别存储，可切换模型独立维护。
-- 对话可导出为Markdown（可读文本）或JSON（含finish_reason、usage、tool_calls等结构化元数据），也可从JSON文件导入对话继续使用（支持追加或覆盖）。
-- 「设置」可调整参数，切换中文/英文，管理本地存储。界面支持亮色/暗色主题切换，通过PWA可在浏览器中「添加到主屏幕」离线使用。
+## 功能
+
+### 运行器（首页）
+- 随机加载并运行内置p5.js脚本
+- 侧边栏查看、搜索、重命名、删除已保存作品
+- 点击作品标题全屏预览；预览模式锁定设备宽高，横竖屏自动适配
+- p5.js/three.js作品均支持PNG截图
+- 主文档双指/多指手势锁定，避免误缩放
+
+### 编写脚本（编辑器）
+- CodeMirror 5编辑器：语法高亮、行号、草稿自动保存
+- **双引擎切换**：右上角 `p5` / `three` 按钮即时切换
+- 上传图片（自动压缩至长边 1024px，会话级），脚本通过 `imageUrl` 引用
+- AI 生成面板：用自然语言描述效果，AI 通过工具调用把代码写入编辑器
+- 编辑器已有内容时可选「覆盖」或「基于现有代码修改」
+- 提交后可预览、下载单个 HTML 文件
+
+### three.js引擎
+- `THREE` 自动注入为全局变量，用户代码直接使用 `THREE.Scene` 等
+- 无需写 `import` 语句
+- 不使用 `OrbitControls` / addons（环境限制），相机手势需手写 `TouchEvent`
+- 截图功能已通过强制 `preserveDrawingBuffer: true` 支持
+
+### AI 助手
+- 支持ChatGPT、Gemini、DeepSeek流式对话
+- 可自定义OpenAI兼容模型（Endpoint / API Model / Tools / Vision）
+- 每个模型独立配置API Key与系统提示词
+- 测试连接、重新生成、删除、复制消息
+- 对话导出Markdown/JSON（含 `finish_reason`、`usage`、`tool_calls` 等元数据）
+- 从JSON文件导入对话（支持追加或覆盖）
+
+### 设置
+- 参数调整：图片上限、工具调用轮次、上下文长度、请求超时、标题长度
+- 中英文切换（静态与动态文本均即时更新）
+- 本地存储管理：查看各项大小、单项删除、打包备份、导入备份、导出全部作品 ZIP
+- 亮/暗主题切换（CodeMirror主题同步）
 
 ---
 
-- randomArt Visual Creative Coding is a pure frontend tool. All data is stored locally in the browser — no backend required, works offline.
-- The home page randomly loads and runs a p5.js sketch, with mouse and touch interaction. The sidebar lets you view, search, rename, or delete saved works; click a title to run it, and capture a PNG screenshot in preview mode.
-- The Script Editor provides a CodeMirror editor with p5.js syntax highlighting, line numbers, and auto-saved drafts; a persistent top menubar keeps the editor full-width. You can upload an image (auto-compressed to max 1024px on the long edge) — scripts reference it via imageUrl, and vision-capable models can "see" it to generate pixelation, palette extraction, color grading, and other processing code. After submitting, preview it or download a single HTML file.
-- The Script Editor includes a built-in AI generation panel: pick a function-calling model, describe the effect in natural language, and the AI writes the code into the editor via tool calls. If the editor already has content, choose Overwrite or let the AI modify the existing code.
-- The AI Assistant supports streaming chat with ChatGPT, Gemini, and DeepSeek, plus custom OpenAI-compatible models. Each model has its own API key and system prompt, with a "Test Connection" option. Conversations are stored per model and kept independently.
-- Conversations can be exported as Markdown (human-readable) or JSON (with structured metadata such as finish_reason, usage, and tool_calls), and imported back from JSON to continue (with append or replace options).
-- The "Settings" entry at the bottom of the sidebar lets you adjust parameters (image size limit, tool loop, context length, request timeout, title length), switch between Chinese and English, and manage local storage (view per-item size, delete items, export backups, import backups, and export all works as a ZIP). The UI supports light/dark themes, and as a PWA it can be added to the home screen for offline use.
+## 技术栈
+
+| 层 | 技术 | 引入方式 |
+|---|---|---|
+| 模块化 | 原生 ESM | `<script type="module">` |
+| 编辑器 | CodeMirror 5.65.16 | CDN UMD（`window.CodeMirror`） |
+| 压缩 | JSZip 3.10.1 | CDN UMD（`window.JSZip`） |
+| 图形 | p5.js 1.9.0 / three.js 0.186.0 | 运行时 CDN |
+| 部署 | GitHub Pages | 纯静态，无构建 |
+
+**无 `package.json`、无 `node_modules`、无构建步骤**——`git push` 即发布。
+
+---
+
+## 目录结构
