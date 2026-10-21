@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+  <div id="diag" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#000;color:#0f0;font:12px monospace;padding:8px;max-height:60vh;overflow:auto;white-space:pre-wrap;"></div>
+
+  <button id="hamburgerBtn">☰</button>
+  <nav id="sidebar">
+    <div id="sidebar-pages"></div>
+  </nav>
+  <div id="overlay"></div>
+  <main id="app">加载中…</main>
+  <div id="modalBackdrop" hidden><div id="modalBox"></div></div>
+
+  <script>
+    const diag = document.getElementById("diag");
+    function log(msg, color) {
+      const d = document.createElement("div");
+      d.textContent = msg;
+      if (color) d.style.color = color;
+      diag.appendChild(d);
+      diag.scrollTop = diag.scrollHeight;
+    }
+    window.addEventListener("error", (e) => {
+      log("[ERROR] " + e.message + "\n  " + (e.filename || "").split("/").pop() + ":" + e.lineno + "\n  " + (e.error && e.error.stack ? e.error.stack.split("\n").slice(0,3).join("\n  ") : ""), "#f66");
+    });
+    window.addEventListener("unhandledrejection", (e) => {
+      log("[PROMISE] " + ((e.reason && e.reason.message) || e.reason), "#f66");
+    });
+    log("[diag] 开始加载 script.js");
+  </script>
+
+  <script src="js/script.js"></script>
+
+  <script>
+    log("[diag] script.js 已执行完毕");
+    setTimeout(() => {
+      const app = document.getElementById("app");
+      log("[diag] 500ms 后 #app 内容：");
+      log("  textContent = " + JSON.stringify((app.textContent || "").slice(0, 80)));
+      log("  innerHTML 前80字 = " + JSON.stringify((app.innerHTML || "").slice(0, 80)));
+      log("  childElementCount = " + app.childElementCount);
+    }, 500);
+    setTimeout(() => {
+      const app = document.getElementById("app");
+      log("[diag] 3000ms 后 #app childElementCount = " + app.childElementCount);
+    }, 3000);
+  </script>
+</body>
+</html>
