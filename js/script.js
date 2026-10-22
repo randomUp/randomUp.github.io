@@ -253,4 +253,4 @@ function initGlobalGuards(){["gesturestart","gesturechange","gestureend"].forEac
 function loadContent(){var tp=new Promise(function(_,rej){setTimeout(function(){rej(new Error("content load timeout"));},CONTENT_TIMEOUT_MS);});return Promise.race([fetch(CONTENT_URL).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}),tp]).then(function(json){var c=json||{};setI18nData(c.i18n||{},c.defaultLang);setAI_MODELS(c.models||[]);setSettingsFromContent(c.settings);});}
 function boot(){initModal();bindSidebar();initGlobalGuards();applyTheme(storageGet(THEME_KEY,"light"));loadSettings();setLang(detectLang());initAIState();applyI18nToStatic();updateSidebarPages();onRouteChange(render);render();}
 (async function start(){try{await initStorage();}catch(e){console.warn("[storage] 初始化失败",e);}try{await loadContent();}catch(e){console.warn("[content] 加载失败或超时",e);}boot();})();
-})();
+})(); 
