@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "settings": {
     "defaults": {
-      "maxImageMB": 8,
+      "maxImageMB": 5,
       "maxToolLoop": 5,
       "maxContext": 30,
       "requestTimeoutSec": 60,
