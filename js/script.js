@@ -58,7 +58,7 @@ var STORAGE_KB_MULTIPLIER=2;
 function estimateStorageKB(){var total=0;try{_cache.forEach(function(v,k){total+=k.length+JSON.stringify(v).length;});}catch(e){return -1;}return Math.round((total*STORAGE_KB_MULTIPLIER)/1024);}
 function _ctxForKey(key){if(key===AI_KEY_STORAGE)return "storage.ctxKeys";if(key===AI_PROMPT_STORAGE)return "storage.ctxPrompts";if(key===AI_CUSTOM_MODELS_STORAGE)return "storage.ctxCustomModels";if(key===STORAGE_KEY)return "storage.ctxPages";if(key.indexOf(AI_CHAT_STORAGE)===0)return "storage.ctxChats";return null;}
 function _handleQuotaError(e,key){if(!isQuotaError(e)){showAlert(T("storage.saveFailTitle"),String((e&&e.message)||e||"?"),true);return;}var usedKB=estimateStorageKB();var usedText=usedKB>=0?T("storage.used",{kb:usedKB}):"";var ctx=_ctxForKey(key);showAlert(T("storage.fullTitle"),T("storage.fullBody",{context:ctx?T(ctx):"?",used:usedText}),true);}
-var DEFAULT_SETTINGS={maxImageMB:1.5,maxToolLoop:5,maxContext:30,requestTimeoutSec:60,maxTitleLen:60};
+var DEFAULT_SETTINGS={maxImageMB:5,maxToolLoop:5,maxContext:30,requestTimeoutSec:60,maxTitleLen:60};
 var DEFAULT_TEST_TIMEOUT_SEC=15;
 var DEFAULT_RANGES={maxImageMB:[0.1,100],maxToolLoop:[1,20],maxContext:[5,200],requestTimeoutSec:[10,300],maxTitleLen:[10,200]};
 var _defaultsFromContent={};var _rangesFromContent={};var _testTimeoutSecFromContent=null;
