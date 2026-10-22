@@ -409,6 +409,20 @@ body.sidebar-open .hamburger-btn {
   line-height: 1.25;
   word-break: break-word;
 }
+#app > div.about-page > h1 {
+  height: 46px;
+  line-height: 46px;
+  margin: calc(-1 * clamp(46px, 10vw, 68px)) 0 0em;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text);
+  padding: 0 16px;
+  box-sizing: border-box;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 #app p {
   font-size: clamp(0.9rem, 2.6vw, 1rem);
   line-height: 1.6;
@@ -638,7 +652,7 @@ button:disabled {
 }
 .ai-clear-btn {
   position: absolute;
-  top: clamp(14px, 2vw, 16px);
+  top: clamp(16px, 2vw, 16px);
   right: clamp(16px, 3vw, 18px);
   z-index: 60;
   width: 28px;
