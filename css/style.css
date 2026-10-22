@@ -1259,19 +1259,19 @@ button:disabled {
   text-overflow: ellipsis;
   text-align: center;
   width: 100%;
-  padding-left: 60px;
+  padding-left: 16px;
   padding-right: 16px;
   box-sizing: border-box;
 }
 .engine-switch-menubar {
   display: flex;
   gap: 6px;
-  margin-top: -10px;
+  margin-top: -12px;
   margin-bottom: 4px;
 }
 .engine-switch-menubar button {
   font-size: 0.8rem;
-  padding: 2px 6px;
+  padding: 2px 8px;
   border: 1px solid var(--border-input);
   background: var(--input-bg-fill);
   color: var(--text);
@@ -1554,6 +1554,13 @@ button:disabled {
 .CodeMirror *:focus-visible {
   outline: none !important;
   box-shadow: none !important;
+}
+.CodeMirror textarea,
+.CodeMirror [contenteditable="true"],
+.CodeMirror [contenteditable=""],
+.CodeMirror [contenteditable="plaintext-only"] {
+  font-size: 16px !important;
+  touch-action: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
