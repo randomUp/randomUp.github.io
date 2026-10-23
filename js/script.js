@@ -18,7 +18,7 @@ function getI18N(){return I18N;}
 function getLang(){return LANG;}
 function setI18nData(d,dl){I18N=d&&typeof d==="object"?d:{};DEFAULT_LANG=typeof dl==="string"&&dl?dl:null;_i18nCache=null;}
 function setLang(c){if(!c||!I18N[c]){c=I18N.zh?"zh":I18N.en?"en":c||"zh";}LANG=c;_writeLangRaw(c);try{document.documentElement.lang=c==="zh"?"zh-CN":"en";}catch(e){}}
-function detectLang(){var s=_readLangRaw();if(s&&I18N[s])return s;var n=(navigator.language||"zh").toLowerCase();if(n.indexOf("zh")===0)return "zh";if(n.indexOf("en")===0)return "en";if(DEFAULT_LANG&&I18N[DEFAULT_LANG])return DEFAULT_LANG;return "en";}
+function detectLang(){var s=_readLangRaw();if(s&&I18N[s])return s;var n=(navigator.language||"en").toLowerCase();if(n.indexOf("zh")===0)return "zh";return "en";}
 function T(k,p){var pack=I18N[LANG]||I18N.zh||{};var t=pack[k];if(t==null)t=(I18N.zh&&I18N.zh[k])||k;if(p){t=String(t).replace(/\{(\w+)\}/g,function(m,kk){return p[kk]!=null?String(p[kk]):m;});}return t;}
 function _collectI18nNodes(){_i18nCache={text:Array.from(document.querySelectorAll("[data-i18n]")),placeholder:Array.from(document.querySelectorAll("[data-i18n-placeholder]")),title:Array.from(document.querySelectorAll("[data-i18n-title]")),aria:Array.from(document.querySelectorAll("[data-i18n-aria]"))};}
 function applyI18nToStatic(){if(!_i18nCache)_collectI18nNodes();_i18nCache.text.forEach(function(n){var k=n.getAttribute("data-i18n");if(!k)return;var t=T(k);var s=n.querySelector("span");if(s)s.textContent=t;else n.textContent=t;});_i18nCache.placeholder.forEach(function(n){var k=n.getAttribute("data-i18n-placeholder");if(!k)return;var t=T(k);n.setAttribute("placeholder",t);n.setAttribute("aria-label",t);});_i18nCache.title.forEach(function(n){var k=n.getAttribute("data-i18n-title");if(!k)return;n.setAttribute("title",T(k));});_i18nCache.aria.forEach(function(n){var k=n.getAttribute("data-i18n-aria");if(!k)return;n.setAttribute("aria-label",T(k));});try{if(!document.title||document.title==="")document.title=T("site.title");}catch(e){}}
@@ -253,4 +253,4 @@ function initGlobalGuards(){["gesturestart","gesturechange","gestureend"].forEac
 function loadContent(){var tp=new Promise(function(_,rej){setTimeout(function(){rej(new Error("content load timeout"));},CONTENT_TIMEOUT_MS);});return Promise.race([fetch(CONTENT_URL).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}),tp]).then(function(json){var c=json||{};setI18nData(c.i18n||{},c.defaultLang);setAI_MODELS(c.models||[]);setSettingsFromContent(c.settings);});}
 function boot(){initModal();bindSidebar();initGlobalGuards();applyTheme(storageGet(THEME_KEY,"light"));loadSettings();setLang(detectLang());initAIState();applyI18nToStatic();updateSidebarPages();onRouteChange(render);render();}
 (async function start(){try{await initStorage();}catch(e){console.warn("[storage] 初始化失败",e);}try{await loadContent();}catch(e){console.warn("[content] 加载失败或超时",e);}boot();})();
-})(); 
+})();
