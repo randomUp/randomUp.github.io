@@ -24,15 +24,15 @@ randomArt可视化创意编程是款纯前端p5.js、three.js创意编程工具�
 ##### three.js引擎
 - `THREE`自动注入为全局变量，用户代码直接使用`THREE.Scene`等
 - 无需写`import`语句
-- 不使用`OrbitControls`/addons（环境限制），相机手势需手写`TouchEvent`
+- 不使用`OrbitControls`、addons（环境限制），相机手势需手写`TouchEvent`
 - 截图功能已通过强制`preserveDrawingBuffer: true`支持
 
 ##### AI 助手
 - 支持ChatGPT、Gemini、DeepSeek流式对话
-- 可自定义OpenAI兼容模型（Endpoint / API Model / Tools / Vision）
+- 可自定义OpenAI兼容模型（Endpoint、API Model、Tools、Vision）
 - 每个模型独立配置API Key与系统提示词
 - 测试连接、重新生成、删除、复制消息
-- 对话导出Markdown/JSON（含 `finish_reason`、`usage`、`tool_calls` 等元数据）
+- 对话导出Markdown、JSON（含 `finish_reason`、`usage`、`tool_calls` 等元数据）
 - 从JSON文件导入对话（支持追加或覆盖）
 
 ##### 设置
